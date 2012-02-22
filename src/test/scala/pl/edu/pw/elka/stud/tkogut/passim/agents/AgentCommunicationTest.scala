@@ -1,5 +1,5 @@
 package pl.edu.pw.elka.stud.tkogut.passim.agents
-import org.scalatest.FunSuite
+import org.scalatest.FunSuite 
 import pl.edu.pw.elka.stud.tkogut.passim.agents.yellowpages.YellowPagesAgent
 import org.scalatest.BeforeAndAfter
 import pl.edu.pw.elka.stud.tkogut.passim.search.GoogleSearch

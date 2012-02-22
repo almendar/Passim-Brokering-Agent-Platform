@@ -18,6 +18,7 @@ object Entry {
     //testEstablishingDialog
     //testGoogleSearch
     //testFromInput
+	println("Hello Agent Platform!")
   }
 
   private def testEstablishingDialog: Unit = {
