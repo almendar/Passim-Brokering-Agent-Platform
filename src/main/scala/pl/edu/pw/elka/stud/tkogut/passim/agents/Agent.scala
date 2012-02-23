@@ -10,7 +10,7 @@ abstract class Agent(agentName: String) extends Actor {
   val name: String = agentName
 
   def speak(text: String) {
-    println(name + ": " + text)
+    //println(name + ": " + text)
   }
 
   val activeDialogs = new HashMap[String, Dialog]

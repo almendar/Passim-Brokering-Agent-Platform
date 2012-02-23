@@ -51,7 +51,7 @@ class AgentRegistrationTest extends FunSuite with BeforeAndAfterEach {
 
       override def handleMessage(msg: Message) {
         msg match {
-          case x: SearchResultMessage => println(x)
+          case x: SearchResultMessage => assert(x.results.length <= 20)//println(x)
         }
       }
 
