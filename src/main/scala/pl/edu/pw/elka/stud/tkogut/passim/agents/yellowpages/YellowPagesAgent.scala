@@ -13,7 +13,7 @@ object YellowPagesAgent extends Agent("YelloPages") {
 
   val book: ListBuffer[Agent] = new ListBuffer;
 
-  def getNameOfRegisteredAgents() = {
+  def getNamesOfRegisteredAgents() = {
     val lb = new ListBuffer[String]
     for (ag <- book) {
       lb.append(ag.name)
@@ -29,9 +29,9 @@ object YellowPagesAgent extends Agent("YelloPages") {
     (
       receive {
         case msg: RegisterKnowledgeSource =>
-          msg.srcObject match {
+          msg.from match {
             case x: Agent => book.append(x)
-            case _        =>
+            case _ =>
           }
 
         //  speak("Registered knowledge source:" + msg.description)
@@ -43,7 +43,7 @@ object YellowPagesAgent extends Agent("YelloPages") {
     val searchAgents = ListBuffer[SearchAgent]()
     book.foreach(_ match {
       case x: SearchAgent => searchAgents.append(x)
-      case _              => false
+      case _ => false
     })
     val listToSend = new WebSearchSourceList(searchAgents.toList)
     speak("Sending request with sources")

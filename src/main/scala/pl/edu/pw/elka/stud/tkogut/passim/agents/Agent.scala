@@ -1,45 +1,64 @@
 package pl.edu.pw.elka.stud.tkogut.passim.agents
 import scala.actors.Actor
 import scala.collection.mutable.HashMap
-import pl.edu.pw.elka.stud.tkogut.passim.messages.EstablishDialog
+import pl.edu.pw.elka.stud.tkogut.passim.messages.EstablishDialogMessage
 import java.util.UUID
 import pl.edu.pw.elka.stud.tkogut.passim.messages.Message
+import com.weiglewilczek.slf4s._
 
-abstract class Agent(agentName: String) extends Actor {
+/**
+ * Base class for all Agents in the system
+ *
+ * @author Tomasz Kogut
+ */
+abstract class Agent(agentName: String) extends Actor with Logging {
 
-  val name: String = agentName
+  protected val activeDialogs = new HashMap[String, Dialog]
 
-  def speak(text: String) {
-    //println(name + ": " + text)
+  protected def handleMessage(msg: Message)
+
+  protected def processDialog(id: String)
+
+  /**
+   * Return Agent's name
+   */
+  final def name: String = agentName
+
+  /**
+   * Method make agent to speak text with his name.
+   *
+   * @param text
+   */
+  final def speak(text: String) {
+    logger.debug(text)
   }
 
-  val activeDialogs = new HashMap[String, Dialog]
-
+  /**
+   * Agents processing message loop.
+   * Automatically can establish a dialog with someone who demands it.
+   * Other messages are passed to @see{handleMessage}
+   */
   def act = {
     loop {
       receive {
-        case dialogDemand: EstablishDialog =>
-          speak("Request to establish dialog from:" + dialogDemand.from.name)
-          activeDialogs += (dialogDemand.dialogId -> new Dialog(dialogDemand.from));
-          confirmDialog(dialogDemand.from, dialogDemand.dialogId)
+        case dialogEstablishRequest: EstablishDialogMessage =>
+          speak("Request to establish dialog from:" + dialogEstablishRequest.from.name)
+          activeDialogs += (dialogEstablishRequest.dialogID -> new Dialog(dialogEstablishRequest.from));
+          confirmDialog(dialogEstablishRequest.from, dialogEstablishRequest.dialogID)
         case ("OK", id: String) =>
           activeDialogs(id).mConfirmed = true
           speak("Dialog confirmed:" + id)
           processDialog(id)
         case x: Message => handleMessage(x)
-        case _          => null
+        case _ => null
       }
     }
   }
 
-  def handleMessage(msg: Message)
-
-  def processDialog(id: String)
-
-  def establishDialog(adress: Agent): String = {
+  final protected def establishDialog(adress: Agent): String = {
     val dialogId = generateID()
     speak("Sending request for dialog with id:" + dialogId + " to:" + adress.name)
-    adress ! EstablishDialog(this, dialogId)
+    adress ! new EstablishDialogMessage(this, dialogId)
     val t = new Dialog(adress)
     activeDialogs += (dialogId -> t)
     return dialogId

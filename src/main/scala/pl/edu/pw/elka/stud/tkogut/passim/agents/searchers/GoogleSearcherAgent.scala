@@ -3,7 +3,7 @@ import pl.edu.pw.elka.stud.tkogut.passim.agents._
 import pl.edu.pw.elka.stud.tkogut.passim.agents.yellowpages.YellowPagesAgent
 import pl.edu.pw.elka.stud.tkogut.passim.search.GoogleSearchSingleResult
 import pl.edu.pw.elka.stud.tkogut.passim.search.GoogleSearch
-import pl.edu.pw.elka.stud.tkogut.passim.messages.QueryWeb
+import pl.edu.pw.elka.stud.tkogut.passim.messages.QueryMessage
 import pl.edu.pw.elka.stud.tkogut.passim.messages.SearchResultMessage
 import java.io.IOException
 
@@ -14,18 +14,18 @@ class GoogleSearcherAgent(nameOfAgent: String) extends SearchAgent(nameOfAgent) 
 
   override def uniqueName() = nameOfAgent
   override def processDialog(id: String) = {}
-  def search(query: QueryWeb) = {
-    val sr: SearchResultMessage = SearchResultMessage(query.dialogId)
+  def search(queryMsg: QueryMessage) = {
+    val sr: SearchResultMessage = new SearchResultMessage(this,queryMsg.dialogId)
     var result: List[GoogleSearchSingleResult] = Nil;
     try {
-      result = googleGate.search(query.q)
+      result = googleGate.search(queryMsg.query)
     } catch {
       case eio: IOException =>
         speak("Google did not provide search results")
         result = Nil
     } finally {
-      sr.results = result
+      sr.resultsList = result
     }
-    activeDialogs(query.dialogId).mContact ! sr
+    activeDialogs(queryMsg.dialogId).contact ! sr
   }
 }

@@ -14,9 +14,9 @@ class BingSearcherAgent(nameofAgent: String) extends SearchAgent(nameofAgent) {
 
   override def processDialog(id: String) {}
 
-  def search(query: QueryWeb) = {
-    val sr: SearchResultMessage = SearchResultMessage(query.dialogId)
-    sr.results = bingGate.search(query.q)
-    activeDialogs(query.dialogId).mContact ! sr
+  def search(query: QueryMessage) = {
+    val sr: SearchResultMessage = new SearchResultMessage(this, query.dialogId)
+    sr.resultsList = bingGate.search(query.query)
+    activeDialogs(query.dialogId).contact ! sr
   }
 }

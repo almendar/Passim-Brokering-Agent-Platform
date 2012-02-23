@@ -7,7 +7,7 @@ import pl.edu.pw.elka.stud.tkogut.passim.search.BingSearch
 import pl.edu.pw.elka.stud.tkogut.passim.agents.searchers.GoogleSearcherAgent
 import pl.edu.pw.elka.stud.tkogut.passim.agents.searchers.BingSearcherAgent
 import pl.edu.pw.elka.stud.tkogut.passim.agents.brokering.BrokerAgent
-import pl.edu.pw.elka.stud.tkogut.passim.messages.QueryWeb
+import pl.edu.pw.elka.stud.tkogut.passim.messages.QueryMessage
 import pl.edu.pw.elka.stud.tkogut.passim.messages.Message
 import org.scalatest.BeforeAndAfterEach
 import pl.edu.pw.elka.stud.tkogut.passim.messages.SearchResultMessage
@@ -29,7 +29,7 @@ class AgentRegistrationTest extends FunSuite with BeforeAndAfterEach {
     agents.foreach(agent => agent.start())
 
     Thread.sleep(300)
-    val listOfRegisteredNames = YellowPagesAgent.getNameOfRegisteredAgents
+    val listOfRegisteredNames = YellowPagesAgent.getNamesOfRegisteredAgents
 
     for (i <- names) {
       assert(listOfRegisteredNames.contains(i))
@@ -51,16 +51,17 @@ class AgentRegistrationTest extends FunSuite with BeforeAndAfterEach {
 
       override def handleMessage(msg: Message) {
         msg match {
-          case x: SearchResultMessage => assert(x.results.length <= 20) //println(x)
+          case (ba: Agent) => establishDialog(ba)
+          case x: SearchResultMessage => assert(x.resultsList.length <= 20) //println(x)
         }
       }
 
       override def processDialog(id: String) {
-        activeDialogs(id).mContact ! QueryWeb("Politechnika Warszawska", id)
+        activeDialogs(id).contact ! QueryMessage("Politechnika Warszawska", id)
       }
     }
     talker.start()
-    talker.establishDialog(ba)
+    ba ! talker
   }
 
 }

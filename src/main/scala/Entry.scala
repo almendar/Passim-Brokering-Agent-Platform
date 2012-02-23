@@ -2,7 +2,7 @@ import scala.Console
 import pl.edu.pw.elka.stud.tkogut.passim.agents.searchers.BingSearcherAgent
 import pl.edu.pw.elka.stud.tkogut.passim.agents.brokering.BrokerAgent
 import pl.edu.pw.elka.stud.tkogut.passim.agents.yellowpages.YellowPagesAgent
-import pl.edu.pw.elka.stud.tkogut.passim.messages.QueryWeb
+import pl.edu.pw.elka.stud.tkogut.passim.messages.QueryMessage
 import pl.edu.pw.elka.stud.tkogut.passim.search.GoogleSearch
 import net.liftweb.json.JsonAST._
 import scala.util.parsing.json._
