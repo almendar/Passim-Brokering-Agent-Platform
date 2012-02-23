@@ -4,6 +4,7 @@ import org.scalatest.BeforeAndAfter
 import java.io.File
 import scala.io.Source
 import pl.edu.pw.elka.stud.tkogut.passim.agents.yellowpages.YellowPagesAgent
+import java.io.IOException
 
 class GoogleSearchJsonTest extends FunSuite with BeforeAndAfter {
   val testFileName = "jsonGoogleSearchResultTest.txt"
@@ -14,12 +15,20 @@ class GoogleSearchJsonTest extends FunSuite with BeforeAndAfter {
     val f = new File("src/test/resources/" + testFileName)
     jsonResponeString = Source.fromFile(f).mkString
   }
-  
+
   test("Trying downloading from google") {
     val searchTerms = List("InnerValue", "mp3", "Linux", "Computer science")
     for (term <- searchTerms) {
       val gs = new GoogleSearch(API_KEY)
-      val results = gs.search(term)
+      try {
+        val results = gs.search(term)
+      } catch {
+        case e: java.io.IOException =>
+          val msg: String = e.getMessage()
+          if (!(msg contains "Server returned HTTP response code: 403"))
+            throw e
+      }
+
     }
   }
 

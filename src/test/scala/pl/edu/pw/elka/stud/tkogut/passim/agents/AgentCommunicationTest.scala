@@ -1,5 +1,5 @@
 package pl.edu.pw.elka.stud.tkogut.passim.agents
-import org.scalatest.FunSuite 
+import org.scalatest.FunSuite
 import pl.edu.pw.elka.stud.tkogut.passim.agents.yellowpages.YellowPagesAgent
 import org.scalatest.BeforeAndAfter
 import pl.edu.pw.elka.stud.tkogut.passim.search.GoogleSearch
@@ -25,8 +25,9 @@ class AgentRegistrationTest extends FunSuite with BeforeAndAfterEach {
   }
 
   test("Agent registration test") {
-    val gs = new GoogleSearcherAgent(GOOGLE_NAME)
-    val bs = new BingSearcherAgent(BING_NAME)
+    val agents: List[Agent] = List(new GoogleSearcherAgent(GOOGLE_NAME), new BingSearcherAgent(BING_NAME))
+    agents.foreach(agent => agent.start())
+
     Thread.sleep(300)
     val listOfRegisteredNames = YellowPagesAgent.getNameOfRegisteredAgents
 
@@ -41,7 +42,6 @@ class AgentRegistrationTest extends FunSuite with BeforeAndAfterEach {
 
     gs.start(); bs.start()
 
-    Thread.sleep(300)
     val ba = new BrokerAgent(BROKER_NAME)
     ba.start()
 
@@ -51,7 +51,7 @@ class AgentRegistrationTest extends FunSuite with BeforeAndAfterEach {
 
       override def handleMessage(msg: Message) {
         msg match {
-          case x: SearchResultMessage => assert(x.results.length <= 20)//println(x)
+          case x: SearchResultMessage => assert(x.results.length <= 20) //println(x)
         }
       }
 
