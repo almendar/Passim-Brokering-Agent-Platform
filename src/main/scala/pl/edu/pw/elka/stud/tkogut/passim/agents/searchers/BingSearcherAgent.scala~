@@ -3,6 +3,7 @@ package pl.edu.pw.elka.stud.tkogut.passim.agents.searchers
 import pl.edu.pw.elka.stud.tkogut.passim.agents._
 import pl.edu.pw.elka.stud.tkogut.passim.search._
 import pl.edu.pw.elka.stud.tkogut.passim.agents.yellowpages.YellowPagesAgent
+import org.scalatest.
 import pl.edu.pw.elka.stud.tkogut.passim.messages._
 
 class BingSearcherAgent(nameofAgent: String) extends SearchAgent(nameofAgent) {

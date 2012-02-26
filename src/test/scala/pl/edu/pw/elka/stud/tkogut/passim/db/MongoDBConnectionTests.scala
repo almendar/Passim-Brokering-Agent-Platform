@@ -46,10 +46,10 @@ class MongoDBConnectionTests extends FunSuite with BeforeAndAfterAll {
     val result = for (x <- trash.find(q)) yield x
     assert(result.length == 2)
   }
-  
+
   test("Query with id") {
     val person = trash.findOne(MongoDBObject(SURNAME -> "Soprano"))
-    val query_id = person.getOrElse(MongoDBObject("_id"->0))("_id")
+    val query_id = person.getOrElse(MongoDBObject("_id" -> 0))("_id")
     val personAlt = trash.findOneByID(query_id)
     assert(personAlt == person)
   }

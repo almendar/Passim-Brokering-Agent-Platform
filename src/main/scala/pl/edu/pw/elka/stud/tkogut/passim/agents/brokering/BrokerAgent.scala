@@ -53,6 +53,7 @@ class BrokerAgent(nameOfAgent: String) extends Agent(nameOfAgent) {
     val st: SearchTask = mTasksMap(mSearchAgentDialogIdToSearchTaskId(searchResults.dialogID))
     st.nrOfAnswersLeft -= 1;
     st.answers(st.nextFree) = searchResults.resultsList
+    speak(st.answers(st.nextFree).toString)
     if (st.nrOfAnswersLeft > 0) {
       st.nextFree += 1
     } else {

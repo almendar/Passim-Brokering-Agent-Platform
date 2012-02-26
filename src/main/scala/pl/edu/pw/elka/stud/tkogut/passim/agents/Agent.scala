@@ -4,14 +4,13 @@ import scala.collection.mutable.HashMap
 import pl.edu.pw.elka.stud.tkogut.passim.messages.EstablishDialogMessage
 import java.util.UUID
 import pl.edu.pw.elka.stud.tkogut.passim.messages.Message
-import com.weiglewilczek.slf4s._
 
 /**
  * Base class for all Agents in the system
  *
  * @author Tomasz Kogut
  */
-abstract class Agent(agentName: String) extends Actor with Logging {
+abstract class Agent(agentName: String) extends Actor {
 
   protected val activeDialogs = new HashMap[String, Dialog]
 
@@ -30,7 +29,7 @@ abstract class Agent(agentName: String) extends Actor with Logging {
    * @param text
    */
   final def speak(text: String) {
-    logger.debug(text)
+    println(name + ":" + text)
   }
 
   /**

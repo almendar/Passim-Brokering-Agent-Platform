@@ -49,10 +49,14 @@ class AgentRegistrationTest extends FunSuite with BeforeAndAfterEach {
 
     val talker = new Agent("Controller") {
 
+      override def act() = {
+        establishDialog(ba)
+        super.act();
+      }
+
       override def handleMessage(msg: Message) {
         msg match {
-          case (ba: Agent) => establishDialog(ba)
-          case x: SearchResultMessage => assert(x.resultsList.length <= 20) //println(x)
+          case x: SearchResultMessage => assert(x.resultsList.length <= 20); //speak(x.toString)
         }
       }
 
@@ -61,7 +65,6 @@ class AgentRegistrationTest extends FunSuite with BeforeAndAfterEach {
       }
     }
     talker.start()
-    ba ! talker
   }
 
 }

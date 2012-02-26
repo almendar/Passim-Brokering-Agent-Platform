@@ -21,7 +21,7 @@ class GoogleSearcherAgent(nameOfAgent: String) extends SearchAgent(nameOfAgent) 
       result = googleGate.search(queryMsg.query)
     } catch {
       case eio: IOException =>
-        speak("Google did not provide search results")
+        speak("Google did not provide search results:" + eio.toString)
         result = Nil
     } finally {
       sr.resultsList = result
