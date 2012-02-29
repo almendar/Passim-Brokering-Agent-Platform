@@ -1,5 +1,4 @@
 package pl.edu.pw.elka.stud.tkogut.passim.messages
+import pl.edu.pw.elka.stud.tkogut.passim.agents.Agent
 
-class DialogMessage(dialogID: String) extends Message {
-  final def DialogID = dialogID
-}
+case class DialogMessage(sender: Agent, dialogID: String) extends Message 

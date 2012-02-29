@@ -2,6 +2,11 @@ package pl.edu.pw.elka.stud.tkogut.passim.search
 import java.util.Date
 import java.net.URL
 
+/**
+ * @author tomek
+ * 
+ */
+
 class SingleSearchResult(url: URL, title: String, description: String) {
   val mURL = url
   val mDescription = description

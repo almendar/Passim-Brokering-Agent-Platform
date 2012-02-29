@@ -31,28 +31,29 @@ class BrokerAgent(nameOfAgent: String) extends Agent(nameOfAgent) {
     msg match {
       case res: SearchResultMessage => processSearchResult(res)
       case lst: WebSearchSourceList => saveSearchResources(lst)
-      case query: QueryWeb          => addSearchTask(query) //establishDialog(searchAgentsList.head) //a.head ! Query(query.q, this) //() => { searchAgentsList.head ! Query(query.q, this) }
+      case query: QueryMessage => addSearchTask(query) //establishDialog(searchAgentsList.head) //a.head ! Query(query.q, this) //() => { searchAgentsList.head ! Query(query.q, this) }
     }
   }
 
   override def processDialog(id: String) = {
     val dialog: Dialog = activeDialogs(id)
-    val searchAgent = dialog.mContact
+    val searchAgent = dialog.contact
     val taskId = mSearchAgentDialogIdToSearchTaskId(id)
     val searchTask = mTasksMap(taskId)
     val queryText: String = searchTask.query
-    searchAgent ! QueryWeb(queryText, id)
+    searchAgent ! new QueryMessage(queryText, id)
   }
 
   private def getSearchSources() = {
     YellowPagesAgent ! SendWebSearchSourceRequest(this)
   }
 
-  private def processSearchResult(res: SearchResultMessage) = {
+  private def processSearchResult(searchResults: SearchResultMessage) = {
 
-    val st: SearchTask = mTasksMap(mSearchAgentDialogIdToSearchTaskId(res.DialogID))
+    val st: SearchTask = mTasksMap(mSearchAgentDialogIdToSearchTaskId(searchResults.dialogID))
     st.nrOfAnswersLeft -= 1;
-    st.answers(st.nextFree) = res.results
+    st.answers(st.nextFree) = searchResults.resultsList
+    speak(st.answers(st.nextFree).toString)
     if (st.nrOfAnswersLeft > 0) {
       st.nextFree += 1
     } else {
@@ -60,9 +61,9 @@ class BrokerAgent(nameOfAgent: String) extends Agent(nameOfAgent) {
       val merger = new SearchResultMerge()
       st.answers.foreach(merger.addResults(_))
       val askerDialogIdm = mSearchTaskIdToQueryAgentDialogId(st.taskID)
-      val answerToQuery = new SearchResultMessage(askerDialogIdm)
-      answerToQuery.results = merger.getResultList
-      activeDialogs(askerDialogIdm).mContact ! answerToQuery
+      val answerToQuery = new SearchResultMessage(this, askerDialogIdm)
+      answerToQuery.resultsList = merger.getResultList
+      activeDialogs(askerDialogIdm).contact ! answerToQuery
     }
   }
 
@@ -72,14 +73,14 @@ class BrokerAgent(nameOfAgent: String) extends Agent(nameOfAgent) {
     else getSearchSources()
   }
 
-  private def addSearchTask(query: QueryWeb) {
+  private def addSearchTask(queryMsg: QueryMessage) {
     val searchAgentsNumber = mSearchAgentsList.length
-    val askerDialogID = query.dialogId
+    val askerDialogID = queryMsg.dialogId
     val taskID = generateID()
     mSearchTaskIdToQueryAgentDialogId += (taskID -> askerDialogID)
     val task = new SearchTask(taskID)
     task.nrOfAnswersLeft = searchAgentsNumber
-    task.query = query.q
+    task.query = queryMsg.query
     mTasksMap(taskID) = task
     mSearchAgentsList.foreach { x: Agent =>
       val searchAgentDialogID = establishDialog(x)
