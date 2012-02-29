@@ -36,11 +36,16 @@ abstract class Agent(agentName: String) extends Actor {
 
   def processDialog(id: String)
 
-  def establishDialog(adress: Agent): String = {
+  def establishDialog(adress: Agent, 
+      nextAction: () => Unit = new Function0[Unit]{
+        def apply() : Unit = {}
+        }
+      ): String = {
     val dialogId = generateID()
     speak("Sending request for dialog with id:" + dialogId + " to:" + adress.name)
     adress ! EstablishDialog(this, dialogId)
     val t = new Dialog(adress)
+    t.nextAction = nextAction
     activeDialogs += (dialogId -> t)
     return dialogId
   }
