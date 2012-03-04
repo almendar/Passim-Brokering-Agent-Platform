@@ -1,6 +1,9 @@
 *.class
 
+.classpath
+.project
 
+.settings/
 target/
 lib_managed/
 src_managed/

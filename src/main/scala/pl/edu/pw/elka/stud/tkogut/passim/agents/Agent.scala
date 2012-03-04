@@ -54,11 +54,11 @@ abstract class Agent(agentName: String) extends Actor {
     }
   }
 
-  def handleMessage(msg: Message)
+ 
 
-  def processDialog(id: String)
+ 
 
-  def final protected def establishDialog(adress: Agent, 
+  final protected def establishDialog(adress: Agent, 
       nextAction: () => Unit = new Function0[Unit]{
         def apply() : Unit = {}
         }
