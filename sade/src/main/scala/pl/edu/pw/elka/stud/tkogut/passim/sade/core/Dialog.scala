@@ -1,4 +1,6 @@
-package pl.edu.pw.elka.stud.tkogut.passim.agents
+package pl.edu.pw.elka.stud.tkogut.passim.sade.core
+
+
 
 final case class Dialog(contact: Agent) {
   var mConfirmed: Boolean = false;

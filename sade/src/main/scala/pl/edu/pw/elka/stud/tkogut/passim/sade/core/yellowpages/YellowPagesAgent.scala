@@ -1,13 +1,9 @@
-package pl.edu.pw.elka.stud.tkogut.passim.agents.yellowpages
+package pl.edu.pw.elka.stud.tkogut.passim.sade.core.yellowpages
 
 import scala.collection.mutable.ListBuffer
 import scala.actors.Actor
-import pl.edu.pw.elka.stud.tkogut.passim.messages._
-import pl.edu.pw.elka.stud.tkogut.passim.agents.Agent
-import pl.edu.pw.elka.stud.tkogut.passim.agents.YelloPagesSearchable
-import pl.edu.pw.elka.stud.tkogut.passim.agents.Agent
-import pl.edu.pw.elka.stud.tkogut.passim.agents.searchers.SearchAgent
-import pl.edu.pw.elka.stud.tkogut.passim.agents.searchers.SearchAgent
+import pl.edu.pw.elka.stud.tkogut.passim.sade.core.Agent
+import pl.edu.pw.elka.stud.tkogut.passim.sade.messages._
 
 object YellowPagesAgent extends Agent("YelloPages") {
 
@@ -28,7 +24,7 @@ object YellowPagesAgent extends Agent("YelloPages") {
   override def act = loop {
     (
       receive {
-        case msg: RegisterKnowledgeSource =>
+        case msg: RegisterAgent =>
           msg.from match {
             case x: Agent => book.append(x)
             case _ =>
@@ -40,12 +36,12 @@ object YellowPagesAgent extends Agent("YelloPages") {
   }
 
   private def sendSearchingAgentList(msg: SendWebSearchSourceRequest): Unit = {
-    val searchAgents = ListBuffer[SearchAgent]()
+    val searchAgents = ListBuffer[Agent]()
     book.foreach(_ match {
-      case x: SearchAgent => searchAgents.append(x)
+      case x: Agent => searchAgents.append(x)
       case _ => false
     })
-    val listToSend = new WebSearchSourceList(searchAgents.toList)
+    val listToSend = new AgentList(searchAgents.toList)
     speak("Sending request with sources")
     msg.from ! listToSend
   }

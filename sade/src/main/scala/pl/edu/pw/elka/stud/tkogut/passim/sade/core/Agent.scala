@@ -1,9 +1,9 @@
-package pl.edu.pw.elka.stud.tkogut.passim.agents
+package pl.edu.pw.elka.stud.tkogut.passim.sade.core
 import scala.actors.Actor
 import scala.collection.mutable.HashMap
-import pl.edu.pw.elka.stud.tkogut.passim.messages.EstablishDialogMessage
+import pl.edu.pw.elka.stud.tkogut.passim.sade.core._
+import pl.edu.pw.elka.stud.tkogut.passim.sade.messages._
 import java.util.UUID
-import pl.edu.pw.elka.stud.tkogut.passim.messages.Message
 
 /**
  * Base class for all Agents in the system
@@ -54,15 +54,10 @@ abstract class Agent(agentName: String) extends Actor {
     }
   }
 
- 
-
- 
-
-  final protected def establishDialog(adress: Agent, 
-      nextAction: () => Unit = new Function0[Unit]{
-        def apply() : Unit = {}
-        }
-      ): String = {
+  final protected def establishDialog(adress: Agent,
+    nextAction: () => Unit = new Function0[Unit] {
+      def apply(): Unit = {}
+    }): String = {
     val dialogId = generateID()
     speak("Sending request for dialog with id:" + dialogId + " to:" + adress.name)
     adress ! new EstablishDialogMessage(this, dialogId)

@@ -1,5 +1,6 @@
-package pl.edu.pw.elka.stud.tkogut.passim.messages
+package pl.edu.pw.elka.stud.tkogut.passim.sade.messages
 
-import pl.edu.pw.elka.stud.tkogut.passim.agents.Agent
+import pl.edu.pw.elka.stud.tkogut.passim.sade.core._
+import pl.edu.pw.elka.stud.tkogut.passim.sade.messages._
 
 case class EstablishDialogMessage(from: Agent, dialogID: String) extends Message

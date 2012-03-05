@@ -1,4 +1,2 @@
-package pl.edu.pw.elka.stud.tkogut.passim.messages
-import pl.edu.pw.elka.stud.tkogut.passim.agents.Agent
-
+package pl.edu.pw.elka.stud.tkogut.passim.sade.messages
 abstract class Message
