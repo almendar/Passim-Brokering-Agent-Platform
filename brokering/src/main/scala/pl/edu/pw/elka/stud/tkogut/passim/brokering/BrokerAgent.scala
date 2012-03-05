@@ -1,21 +1,17 @@
-package pl.edu.pw.elka.stud.tkogut.passim.agents.brokering
+package pl.edu.pw.elka.stud.tkogut.passim.brokering
 
 import scala.actors.Actor._
 import scala.Console
 import scala.collection.mutable.Map
-import pl.edu.pw.elka.stud.tkogut.passim.agents.searchers.BingSearcherAgent
-import pl.edu.pw.elka.stud.tkogut.passim.search.BingSearchSingleResult
-import pl.edu.pw.elka.stud.tkogut.passim.agents._
-import pl.edu.pw.elka.stud.tkogut.passim.agents.yellowpages.YellowPagesAgent
-import pl.edu.pw.elka.stud.tkogut.passim.messages._
-import pl.edu.pw.elka.stud.tkogut.passim.search.SingleSearchResult
-import pl.edu.pw.elka.stud.tkogut.passim.agents.searchers.SearchAgent
-import pl.edu.pw.elka.stud.tkogut.passim.messages.SendWebSearchSourceRequest
-import pl.edu.pw.elka.stud.tkogut.passim.tools.SearchResultMerge
+import pl.edu.pw.elka.stud.tkogut.passim.sade.core.yellowpages._
+import pl.edu.pw.elka.stud.tkogut.passim.sade.core._
+import pl.edu.pw.elka.stud.tkogut.passim.sade.messages._
+import pl.edu.pw.elka.stud.tkogut.passim.brokering.messages._
+import pl.edu.pw.elka.stud.tkogut.passim.brokering.tools._
 
 class BrokerAgent(nameOfAgent: String) extends Agent(nameOfAgent) {
 
-  private var mSearchAgentsList: List[SearchAgent] = null;
+  private var mSearchAgentsList: List[Agent] = null;
 
   private val mSearchAgentDialogIdToSearchTaskId = Map[String, String]()
   private val mSearchTaskIdToQueryAgentDialogId = Map[String, String]()
@@ -30,7 +26,7 @@ class BrokerAgent(nameOfAgent: String) extends Agent(nameOfAgent) {
   override def handleMessage(msg: Message) {
     msg match {
       case res: SearchResultMessage => processSearchResult(res)
-      case lst: WebSearchSourceList => saveSearchResources(lst)
+      case lst: AgentList => saveSearchResources(lst)
       case query: QueryMessage => addSearchTask(query) //establishDialog(searchAgentsList.head) //a.head ! Query(query.q, this) //() => { searchAgentsList.head ! Query(query.q, this) }
     }
   }
@@ -67,7 +63,7 @@ class BrokerAgent(nameOfAgent: String) extends Agent(nameOfAgent) {
     }
   }
 
-  private def saveSearchResources(lst: WebSearchSourceList): Unit = {
+  private def saveSearchResources(lst: AgentList): Unit = {
     speak("Received list with search agents")
     if (lst.list.length != 0) mSearchAgentsList = lst.list
     else getSearchSources()

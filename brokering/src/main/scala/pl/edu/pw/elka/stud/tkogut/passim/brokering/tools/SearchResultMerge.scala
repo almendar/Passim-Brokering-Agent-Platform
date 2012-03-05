@@ -1,9 +1,9 @@
 /**
  *
  */
-package pl.edu.pw.elka.stud.tkogut.passim.tools
+package pl.edu.pw.elka.stud.tkogut.passim.brokering.tools
 
-import pl.edu.pw.elka.stud.tkogut.passim.search.SingleSearchResult
+import pl.edu.pw.elka.stud.tkogut.passim.brokering.tools.SingleSearchResult
 import scala.collection.mutable.Map
 import java.net.URI
 /**

@@ -1,6 +1,7 @@
-package pl.edu.pw.elka.stud.tkogut.passim.messages
-import pl.edu.pw.elka.stud.tkogut.passim.search.SingleSearchResult
-import pl.edu.pw.elka.stud.tkogut.passim.agents.Agent
+package pl.edu.pw.elka.stud.tkogut.passim.brokering.messages
+import pl.edu.pw.elka.stud.tkogut.passim.brokering.tools.SingleSearchResult
+import pl.edu.pw.elka.stud.tkogut.passim.sade.core.Agent
+import pl.edu.pw.elka.stud.tkogut.passim.sade.messages.DialogMessage
 
 class SearchResultMessage(from: Agent, dialogID: String) extends DialogMessage(from, dialogID) {
   var resultsList: List[SingleSearchResult] = null
