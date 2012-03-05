@@ -3,8 +3,10 @@
 .classpath
 .project
 
+.cache
 .settings/
 target/
 lib_managed/
 src_managed/
 project/boot/
+data/
