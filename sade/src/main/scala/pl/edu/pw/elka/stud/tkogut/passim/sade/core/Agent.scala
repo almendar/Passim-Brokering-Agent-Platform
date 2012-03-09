@@ -67,12 +67,12 @@ abstract class Agent(agentName: String) extends Actor {
     return dialogId
   }
 
-  private def confirmDialog(adress: Agent, dialogId: String) = {
+  final private def confirmDialog(adress: Agent, dialogId: String) = {
     speak("Confirming dialog:" + dialogId + " with:" + adress.name)
     adress ! ("OK", dialogId)
   }
 
-  protected def generateID(): String = {
+  final protected def generateID(): String = {
     UUID.randomUUID().toString()
   }
 }
