@@ -1,13 +1,11 @@
 package pl.edu.pw.elka.stud.tkogut.passim.websearchers
 import org.scalatest.FunSuite
-
-import org.scalatest.BeforeAndAfter
+import org.scalatest.BeforeAndAfterEach
 import pl.edu.pw.elka.stud.tkogut.passim.sade.core._
 import pl.edu.pw.elka.stud.tkogut.passim.sade.core.yellowpages._
 import pl.edu.pw.elka.stud.tkogut.passim.sade.messages._
 import pl.edu.pw.elka.stud.tkogut.passim.brokering._
 import pl.edu.pw.elka.stud.tkogut.passim.brokering.messages._
-import org.scalatest.BeforeAndAfterEach
 
 
 class AgentRegistrationTest extends FunSuite with BeforeAndAfterEach {

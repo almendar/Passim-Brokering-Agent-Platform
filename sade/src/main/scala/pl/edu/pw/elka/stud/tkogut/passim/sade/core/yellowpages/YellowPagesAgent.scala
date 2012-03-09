@@ -5,9 +5,9 @@ import scala.actors.Actor
 import pl.edu.pw.elka.stud.tkogut.passim.sade.core.Agent
 import pl.edu.pw.elka.stud.tkogut.passim.sade.messages._
 
-object YellowPagesAgent extends Agent("YelloPages") {
+final object YellowPagesAgent extends Agent("YelloPages") {
 
-  val book: ListBuffer[Agent] = new ListBuffer;
+  protected val book: ListBuffer[Agent] = new ListBuffer;
 
   def getNamesOfRegisteredAgents() = {
     val lb = new ListBuffer[String]
