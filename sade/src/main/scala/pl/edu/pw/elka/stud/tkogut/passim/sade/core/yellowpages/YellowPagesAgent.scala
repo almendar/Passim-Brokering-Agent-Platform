@@ -7,7 +7,7 @@ import pl.edu.pw.elka.stud.tkogut.passim.sade.messages._
 
 final object YellowPagesAgent extends Agent("YelloPages") {
 
-  protected val book: ListBuffer[Agent] = new ListBuffer;
+  val book: ListBuffer[Agent] = new ListBuffer;
 
   def getNamesOfRegisteredAgents() = {
     val lb = new ListBuffer[String]
@@ -43,7 +43,7 @@ final object YellowPagesAgent extends Agent("YelloPages") {
     })
     val listToSend = new AgentList(searchAgents.toList)
     speak("Sending request with sources")
-    msg.from ! listToSend
+    sender ! listToSend
   }
 
 }

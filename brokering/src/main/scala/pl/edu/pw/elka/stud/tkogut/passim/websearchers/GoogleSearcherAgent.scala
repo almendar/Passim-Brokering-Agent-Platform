@@ -12,7 +12,7 @@ class GoogleSearcherAgent(nameOfAgent: String) extends SearchAgent(nameOfAgent) 
   private val API_KEY = "AIzaSyCZ72XdhT4SOG2BUdGFA043jNxT9Fd4wPk"
   val googleGate = new GoogleSearch(API_KEY)
 
-  override def uniqueName() = nameOfAgent
+  
   override def processDialog(id: String) = {}
   def search(queryMsg: QueryMessage) = {
     val sr: SearchResultMessage = new SearchResultMessage(this, queryMsg.dialogId)
