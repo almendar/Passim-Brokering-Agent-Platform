@@ -7,7 +7,7 @@ import pl.edu.pw.elka.stud.tkogut.passim.sade.messages._
 
 final object YellowPagesAgent extends Agent("YelloPages") {
 
-  protected val book: ListBuffer[Agent] = new ListBuffer;
+  protected[yellowpages] val book: ListBuffer[Agent] = new ListBuffer;
 
   def getNamesOfRegisteredAgents() = {
     val lb = new ListBuffer[String]

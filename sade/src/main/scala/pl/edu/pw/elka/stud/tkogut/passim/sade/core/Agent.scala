@@ -5,6 +5,11 @@ import pl.edu.pw.elka.stud.tkogut.passim.sade.core._
 import pl.edu.pw.elka.stud.tkogut.passim.sade.messages._
 import java.util.UUID
 
+object Agent {
+  private final val OK = "OK"
+  private final val BYE = "BYE"
+}
+
 /**
  * Base class for all Agents in the system
  *
@@ -43,34 +48,42 @@ abstract class Agent(agentName: String) extends Actor {
       receive {
         case dialogEstablishRequest: EstablishDialogMessage =>
           speak("Request to establish dialog from:" + dialogEstablishRequest.from.name)
-          activeDialogs += (dialogEstablishRequest.dialogID -> new Dialog(dialogEstablishRequest.from));
+          activeDialogs += (dialogEstablishRequest.dialogID -> new Dialog(dialogEstablishRequest.from, dialogEstablishRequest.dialogID));
           confirmDialog(dialogEstablishRequest.from, dialogEstablishRequest.dialogID)
-        case ("OK", id: String) =>
-          activeDialogs(id).mConfirmed = true
+        case (Agent.OK, id: String) =>
+          activeDialogs(id).isConfirmed = true
           speak("Dialog confirmed:" + id)
           processDialog(id)
+        case (Agent.BYE, id: String) =>
+          activeDialogs -= id
         case x: Message => handleMessage(x)
-        case _ => speak("Nieznana wiadomosc:")
+        case y: Any => speak("Unknown message:" + y)
       }
     }
   }
 
   final protected def establishDialog(adress: Agent,
-    nextAction: () => Unit = new Function0[Unit] {
-      def apply(): Unit = {}
+    nextAction: String => Unit = new Function1[String, Unit] {
+      def apply(id: String): Unit = {}
     }): String = {
     val dialogId = generateID()
     speak("Sending request for dialog with id:" + dialogId + " to:" + adress.name)
     adress ! new EstablishDialogMessage(this, dialogId)
-    val t = new Dialog(adress)
+    val t = new Dialog(adress, dialogId)
     t.nextAction = nextAction
     activeDialogs += (dialogId -> t)
     return dialogId
   }
 
+  final protected def endDialog(id: String) {
+    val d = activeDialogs(id)
+    activeDialogs -= (id)
+    d.contact ! (Agent.BYE, id)
+  }
+
   final private def confirmDialog(adress: Agent, dialogId: String) = {
     speak("Confirming dialog:" + dialogId + " with:" + adress.name)
-    adress ! ("OK", dialogId)
+    adress ! (Agent.OK, dialogId)
   }
 
   final protected def generateID(): String = {

@@ -2,40 +2,63 @@ package pl.edu.pw.elka.stud.tkogut.passim.sade.core;
 
 import org.scalatest._
 import pl.edu.pw.elka.stud.tkogut.passim.sade.messages._
+import scala.actors._
 
-case class StartDialog() extends Message
+case class StartDialog(withWho: Agent) extends Message
+case class CheckDialogId(dialogId: String) extends Message
+case class IdIsOK() extends Message
+case class CheckIfDialogIsRemoved(id: String) extends Message
 
 class AgentsCoreFunctionsTest extends FunSuite {
 
-  val initiatorAgent = new Agent("Initiator") {
+  var initDialog: String = null
+  var responderDialog: String = null
 
-    override def handleMessage(msg: Message) {
-      speak("1")
-      msg match {
-        case x1: StartDialog => println("!"); establishDialog(respondingAgent, () => this.exit())
-        case _ => println("??")
+  test("Dialog establish and end") {
+
+    val respondingAgent = new Agent("Responder") {
+      override def processDialog(id: String) = {}
+      override def handleMessage(msg: Message) = {
+        msg match {
+          case CheckDialogId(id: String) =>
+            assert(activeDialogs(id).id == initDialog)
+            sender ! IdIsOK()
+          case CheckIfDialogIsRemoved(id: String) =>
+            assert(!activeDialogs.contains(id))
+        }
+      }
+    }
+    val initiatorAgent = new Agent("Initiator") {
+      var lastId: String = null
+      override def handleMessage(msg: Message) {
+        msg match {
+          case StartDialog(a: Agent) =>
+            initDialog = establishDialog(a,
+              (id: String) => {
+                assert(initDialog != null)
+                assert(activeDialogs(id).isConfirmed)
+                respondingAgent ! CheckDialogId(id)
+              })
+          case IdIsOK() =>
+            endDialog(initDialog)
+            respondingAgent ! CheckIfDialogIsRemoved(initDialog)
+
+        }
+      }
+      override def processDialog(id: String) {
+        val dialog = activeDialogs(id)
+        dialog.nextAction(id)
       }
     }
 
-    override def processDialog(id: String) {
-      val dialog = activeDialogs(id)
-      assert(dialog.contact == (respondingAgent))
-      assert(dialog.mConfirmed == true)
-      dialog.nextAction()
-    }
+    //Start agents
+    initiatorAgent.start
+    respondingAgent.start
 
-  }
+    //Start the conversation
+    initiatorAgent ! StartDialog(respondingAgent)
 
-  val respondingAgent = new Agent("Responder") {
-    override def processDialog(id: String) = {}
-    override def handleMessage(msg: Message) = {}
-  }
+    //assert(initDialog == responderDialog)
 
-  initiatorAgent.start
-  respondingAgent.start
-
-  test("Dialog establish dialog") {
-    initiatorAgent !  StartDialog()
-    Thread.sleep(1000)
   }
 }
