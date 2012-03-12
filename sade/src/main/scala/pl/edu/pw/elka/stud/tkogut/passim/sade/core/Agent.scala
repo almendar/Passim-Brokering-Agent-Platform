@@ -28,8 +28,8 @@ abstract class Agent(agentName: String) extends Actor {
    *
    * @param text
    */
-  final def speak(text: String) {
-    println(name + ":" + text)
+  final def speak(Obj: Any) {
+    println(name + ":" + Obj.toString)
   }
 
   /**
@@ -38,6 +38,7 @@ abstract class Agent(agentName: String) extends Actor {
    * Other messages are passed to @see{handleMessage}
    */
   def act = {
+    speak("Started to act")
     loop {
       receive {
         case dialogEstablishRequest: EstablishDialogMessage =>
@@ -49,7 +50,7 @@ abstract class Agent(agentName: String) extends Actor {
           speak("Dialog confirmed:" + id)
           processDialog(id)
         case x: Message => handleMessage(x)
-        case _ => null
+        case _ => speak("Nieznana wiadomosc:")
       }
     }
   }

@@ -8,8 +8,6 @@ class BingSearcherAgent(nameofAgent: String) extends SearchAgent(nameofAgent) {
 
   val bingGate = new BingSearch("8A4C8362BAF8F435BCF3F8854CBEF493006E398A")
 
-  override def uniqueName() = nameofAgent
-
   override def processDialog(id: String) {}
 
   def search(query: QueryMessage) = {

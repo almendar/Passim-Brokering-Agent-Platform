@@ -43,7 +43,7 @@ final object YellowPagesAgent extends Agent("YelloPages") {
     })
     val listToSend = new AgentList(searchAgents.toList)
     speak("Sending request with sources")
-    msg.from ! listToSend
+    sender ! listToSend
   }
 
 }
