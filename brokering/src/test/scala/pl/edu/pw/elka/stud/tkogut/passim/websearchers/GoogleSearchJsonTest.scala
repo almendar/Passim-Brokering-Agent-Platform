@@ -12,7 +12,7 @@ class GoogleSearchJsonTest extends FunSuite with BeforeAndAfter {
   var jsonResponeString: String = null
   val API_KEY = "AIzaSyCZ72XdhT4SOG2BUdGFA043jNxT9Fd4wPk"
   before {
-    YellowPagesAgent.book.clear()
+    //YellowPagesAgent.book.clear()
     val f = new File("brokering/src/test/resources/" + testFileName)
     jsonResponeString = Source.fromFile(f).mkString
   }
@@ -33,7 +33,7 @@ class GoogleSearchJsonTest extends FunSuite with BeforeAndAfter {
     }
   }
 
-  test("Parsing JSON doc from google") {
+  test("Parsing offline JSON doc from google") {
     val gs = new GoogleSearch(API_KEY)
     val results = gs.processGoogleJSON(jsonResponeString)
     val r1: GoogleSearchSingleResult = results(0)
