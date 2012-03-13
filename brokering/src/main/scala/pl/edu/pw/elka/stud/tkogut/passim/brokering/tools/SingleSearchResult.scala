@@ -4,16 +4,15 @@ import java.net.URL
 
 /**
  * @author tomek
- * 
+ *
  */
 
 class SingleSearchResult(url: URL, title: String, description: String) {
+  def this(url: String, title: String, description: String) = this(new URL(url), title, description)
   val mURL = url
   val mDescription = description
   val mTitle = title
   val mAdditionalAttributes = scala.collection.mutable.Map[String, String]()
-
-  def this(url: String, title: String, description: String) = this(new URL(url), title, description)
 
   override def toString() = {
     val sb: StringBuilder = new StringBuilder

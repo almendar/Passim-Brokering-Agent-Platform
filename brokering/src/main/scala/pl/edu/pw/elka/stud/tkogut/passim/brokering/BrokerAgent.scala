@@ -45,7 +45,6 @@ class BrokerAgent(nameOfAgent: String) extends Agent(nameOfAgent) {
   }
 
   private def processSearchResult(searchResults: SearchResultMessage) = {
-
     val st: SearchTask = mTasksMap(mSearchAgentDialogIdToSearchTaskId(searchResults.dialogID))
     st.nrOfAnswersLeft -= 1;
     st.answers(st.nextFree) = searchResults.resultsList
