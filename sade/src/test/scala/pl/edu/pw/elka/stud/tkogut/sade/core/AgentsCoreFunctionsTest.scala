@@ -2,8 +2,6 @@ package pl.edu.pw.elka.stud.tkogut.sade.core;
 
 import org.scalatest._
 import pl.edu.pw.elka.stud.tkogut.sade.messages._
-import pl.edu.pw.elka.stud.tkogut.sade.core.Agent;
-import pl.edu.pw.elka.stud.tkogut.sade.core.Dialog;
 import scala.actors._
 
 case class StartDialog(withWho: Agent) extends Message
