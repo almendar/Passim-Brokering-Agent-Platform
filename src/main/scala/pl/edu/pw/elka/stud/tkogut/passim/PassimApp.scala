@@ -6,7 +6,7 @@ import pl.edu.pw.elka.stud.tkogut.brokering.dialect._
 object PassimApp {
 
   def main(args: Array[String]): Unit = {
-    val d = new Dialect("BrokerDialect")
+    val d = Dialect("BrokerDialect")
     val e = Entity("Person")
     e.attributes ++= List(
       Attribute("Name", AttributeType.STRING),

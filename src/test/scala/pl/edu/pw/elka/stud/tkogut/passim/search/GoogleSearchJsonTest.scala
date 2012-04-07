@@ -1,4 +1,4 @@
-package pl.edu.pw.elka.stud.tkogut.passim.websearchers
+package pl.edu.pw.elka.stud.tkogut.passim.search
 import org.scalatest.FunSuite
 import org.scalatest.BeforeAndAfter
 import java.io.File
