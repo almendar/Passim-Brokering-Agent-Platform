@@ -4,7 +4,7 @@ import java.io.InputStreamReader
 import java.net.URLConnection
 import java.net.URL
 import scala.collection.mutable.ListBuffer
-import pl.edu.pw.elka.stud.tkogut.brokering.tools.SingleSearchResult
+import pl.edu.pw.elka.stud.tkogut.brokering.tools._
 import net.liftweb.json.JArray
 import net.liftweb.json.JsonAST._
 
@@ -12,7 +12,9 @@ import net.liftweb.json.JsonAST._
 //AIzaSyCZ72XdhT4SOG2BUdGFA043jNxT9Fd4wPk
 
 case class GoogleSearchSingleResult(url: URL, title: String, description: String)
-  extends SingleSearchResult(url, title, description)
+  extends SingleWebSearchResult(url, title, description) {
+  additionalAttributes += ("Google" -> "Search Engine")
+}
 
 object GoogleSearch {
 
@@ -27,6 +29,7 @@ class GoogleSearch(apiKey: String) {
   private val result = new ListBuffer[GoogleSearchSingleResult]
 
   def search(query: String): List[GoogleSearchSingleResult] = {
+    result.clear
     setQuery(query)
     getJsonResponse
     parseJSONDocument
@@ -95,7 +98,7 @@ class GoogleSearch(apiKey: String) {
           false
       })
 
-    val jarrayOfResults: JArray = items(0).asInstanceOf[JField].value.asInstanceOf[JArray]
+    val jarrayOfResults: JArray = if (items.length > 0) items(0).asInstanceOf[JField].value.asInstanceOf[JArray] else JArray(List())
     val resultsMap = jarrayOfResults.values.asInstanceOf[List[Map[String, String]]]
     for (l <- resultsMap) {
       val url: URL = new URL(l(GoogleSearch.LINK_URL_MAP_KEY))

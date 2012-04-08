@@ -83,12 +83,12 @@ class AgentRegistrationTest extends FunSuite with BeforeAndAfterEach {
       override def handleMessage(msg: Message) {
         msg match {
           case x: SearchResultMessage =>
-            val result = x.resultsList
+            val result = x.resultsList.asInstanceOf[List[SingleWebSearchResult]]
             assert(result.length == 3);
-            result.foreach { res: SingleSearchResult =>
+            result.foreach { res: SingleWebSearchResult =>
               res.mURL match {
                 case queryRes1URL =>
-                  assert(res.mAdditionalAttributes(BingSearchSingleResult.DATE_TIME_ATTRIBUTE) ==
+                  assert(res.additionalAttributes(BingSearchSingleResult.DATE_TIME_ATTRIBUTE) ==
                     queryRes1Date.toString)
                 //case queryRes2URL =>
                   //assert(res.mAdditionalAttributes.isEmpty)

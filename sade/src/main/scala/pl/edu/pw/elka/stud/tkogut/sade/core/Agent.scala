@@ -6,8 +6,8 @@ import pl.edu.pw.elka.stud.tkogut.sade.messages._
 import java.util.UUID
 
 object Agent {
-  private final val OK = "OK"
-  private final val BYE = "BYE"
+  final val OK = "OK"
+  final val BYE = "BYE"
 }
 
 /**
@@ -55,7 +55,7 @@ abstract class Agent(agentName: String) extends Actor {
           speak("Dialog confirmed:" + id)
           processDialog(id)
         case (Agent.BYE, id: String) =>
-          activeDialogs -= id
+          if (activeDialogs.contains(id)) activeDialogs -= id
         case x: Message => handleMessage(x)
         case y: Any => speak("Unknown message:" + y)
       }

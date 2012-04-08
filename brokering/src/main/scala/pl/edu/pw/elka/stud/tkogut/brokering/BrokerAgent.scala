@@ -8,8 +8,7 @@ import pl.edu.pw.elka.stud.tkogut.sade.messages._
 import pl.edu.pw.elka.stud.tkogut.brokering._
 import pl.edu.pw.elka.stud.tkogut.brokering.messages._
 import pl.edu.pw.elka.stud.tkogut.brokering.tools._
-
-
+import scala.collection.mutable.ListBuffer
 
 class BrokerAgent(nameOfAgent: String) extends Agent(nameOfAgent) {
 
@@ -26,9 +25,10 @@ class BrokerAgent(nameOfAgent: String) extends Agent(nameOfAgent) {
   getSearchSources()
 
   override def handleMessage(msg: Message) {
+    speak(msg)
     msg match {
       case res: SearchResultMessage => processSearchResult(res)
-      case lst: AgentList => saveSearchResources(lst)
+      case y: AgentList => saveSearchResources(y)
       case query: QueryMessage => addSearchTask(query) //establishDialog(searchAgentsList.head) //a.head ! Query(query.q, this) //() => { searchAgentsList.head ! Query(query.q, this) }
     }
   }
@@ -45,17 +45,15 @@ class BrokerAgent(nameOfAgent: String) extends Agent(nameOfAgent) {
   private def getSearchSources() = {
 
     val msg = new SendAgentsMeetingConstraint(this, (a: Agent) =>
-      (a.isInstanceOf[SearchAgent])
-      )
-
+      (a.isInstanceOf[SearchAgent]))
     YellowPagesAgent ! msg
   }
 
   private def processSearchResult(searchResults: SearchResultMessage) = {
     val st: SearchTask = mTasksMap(mSearchAgentDialogIdToSearchTaskId(searchResults.dialogID))
     st.nrOfAnswersLeft -= 1;
-    st.answers(st.nextFree) = searchResults.resultsList
-    speak(st.answers(st.nextFree).toString)
+    st.answers.append(searchResults.resultsList)
+    //speak(st.answers(st.nextFree).toString)
     if (st.nrOfAnswersLeft > 0) {
       st.nextFree += 1
     } else {
@@ -76,6 +74,16 @@ class BrokerAgent(nameOfAgent: String) extends Agent(nameOfAgent) {
   }
 
   private def addSearchTask(queryMsg: QueryMessage) {
+
+    import pl.edu.pw.elka.stud.tkogut.sade.core.Agent
+    if (queryMsg.query.trim.isEmpty) {
+      val dialogId = queryMsg.dialogId
+      val who = activeDialogs(dialogId).contact
+      activeDialogs -= queryMsg.dialogId
+      val byeMsg = (Agent.BYE, dialogId)
+      who ! byeMsg
+    }
+
     val searchAgentsNumber = mSearchAgentsList.length
     val askerDialogID = queryMsg.dialogId
     val taskID = generateID()
@@ -99,7 +107,7 @@ class Task(taskId: String) {
 
 class SearchTask(taskId: String) extends Task(taskId) {
   var nrOfAnswersLeft = 0;
-  val answers: Array[List[SingleSearchResult]] = Array(null, null)
+  val answers: ListBuffer[List[SingleSearchResult]] = new ListBuffer[List[SingleSearchResult]]()
   var nextFree: Int = 0;
   var query: String = null
 }

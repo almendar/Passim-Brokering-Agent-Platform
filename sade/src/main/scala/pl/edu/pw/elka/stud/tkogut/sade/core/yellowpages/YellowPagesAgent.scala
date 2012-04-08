@@ -29,17 +29,19 @@ final object YellowPagesAgent extends Agent("YelloPages") {
             case x: Agent => book.append(x)
             case _ =>
           }
-
         //  speak("Registered knowledge source:" + msg.description)
-        case msg: SendAgentsMeetingConstraint => sendSearchingAgentList(msg)
+        case msg: SendAgentsMeetingConstraint => {
+          val listToSend = sendSearchingAgentList(msg)
+          speak("Sending request with sources")
+          msg.from ! listToSend
+        }
       })
   }
 
-  private def sendSearchingAgentList(msg: SendAgentsMeetingConstraint): Unit = {
+  private def sendSearchingAgentList(msg: SendAgentsMeetingConstraint) = {
     val filteredList = book.filter(msg.apply(_))
     val listToSend = new AgentList(filteredList.toList)
-    speak("Sending request with sources")
-    sender ! listToSend
+    listToSend
   }
 
 }

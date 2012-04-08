@@ -6,20 +6,21 @@ import scala.collection.mutable.ListBuffer
 import java.util.Date
 import java.util.Calendar
 import java.net.URL
-import pl.edu.pw.elka.stud.tkogut.brokering.tools.SingleSearchResult
+import pl.edu.pw.elka.stud.tkogut.brokering.tools.SingleWebSearchResult
 
 object BingSearchSingleResult {
   val DATE_TIME_ATTRIBUTE = "DateTime"
 }
 
 class BingSearchSingleResult(url: URL, title: String, description: String, dateTime: Date)
-  extends SingleSearchResult(url, title, description) {
-  mAdditionalAttributes += (BingSearchSingleResult.DATE_TIME_ATTRIBUTE -> dateTime.toString())
+  extends SingleWebSearchResult(url, title, description) {
+  additionalAttributes += (BingSearchSingleResult.DATE_TIME_ATTRIBUTE -> dateTime.toString())
+  additionalAttributes += ("Microsoft" -> "Bing Engine")
 
   override def toString(): String = {
     val sb = new StringBuilder(super.toString)
     sb append "\n\tDate: "
-    sb append mAdditionalAttributes(BingSearchSingleResult.DATE_TIME_ATTRIBUTE)
+    sb append additionalAttributes(BingSearchSingleResult.DATE_TIME_ATTRIBUTE)
     sb.toString
   }
 }
@@ -32,6 +33,7 @@ class BingSearch(app_id: String) {
   private val result = ListBuffer[BingSearchSingleResult]()
 
   def search(lookUpQuery: String): List[BingSearchSingleResult] = {
+    result.clear
     val respondXML = getDataFromWeb(lookUpQuery)
     processXMLResponse(respondXML)
     return result.toList

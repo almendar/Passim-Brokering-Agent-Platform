@@ -1,33 +1,32 @@
 package pl.edu.pw.elka.stud.tkogut.brokering.tools
-import java.util.Date
-import java.net.URL
+import scala.collection.mutable.Map
 
-/**
- * @author tomek
- *
- */
+class SingleSearchResult(title: String, description: String) {
 
-class SingleSearchResult(url: URL, title: String, description: String) {
-  def this(url: String, title: String, description: String) = this(new URL(url), title, description)
-  val mURL = url
+  protected def openTag = "Result"
+
+  val _additionalAttributes = Map[String, String]()
   val mDescription = description
   val mTitle = title
-  val mAdditionalAttributes = scala.collection.mutable.Map[String, String]()
+
+  def additionalAttributes = _additionalAttributes
 
   override def toString() = {
     val sb: StringBuilder = new StringBuilder
-    sb append "Web result"
-    sb append "\n\tURL: "
-    sb append url
+    sb append openTag
     sb append "\n\tTitle: "
     sb append title
     sb append "\n\tDescription: "
     sb append description
+    for ((k, v) <- additionalAttributes) {
+      sb append ("\n\t" + k + ": ")
+      sb append v
+    }
     sb.toString()
   }
 }
 
 object SingleSearchResult {
-  val MISSING_DESCRIPTION: String = "missing_description"
-  val MISSING_TITLE: String = "missing_title"
+  val MISSING_DESCRIPTION: String = "NO DESCRIPTION"
+  val MISSING_TITLE: String = "NO TITLE"
 }
