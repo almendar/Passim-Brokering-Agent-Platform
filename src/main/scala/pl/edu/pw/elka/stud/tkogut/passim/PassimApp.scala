@@ -1,16 +1,14 @@
 package pl.edu.pw.elka.stud.tkogut.passim
-import java.io.File
-import pl.edu.pw.elka.stud.tkogut.brokering.dialect._
+
 import pl.edu.pw.elka.stud.tkogut.passim.search.google.GoogleSearcherAgent
+import pl.edu.pw.elka.stud.tkogut.passim.search.dummy.DummyClient
 import pl.edu.pw.elka.stud.tkogut.passim.search.bing.BingSearcherAgent
 import pl.edu.pw.elka.stud.tkogut.passim.search.dblp.MongoDblpSearchAgent
 import pl.edu.pw.elka.stud.tkogut.brokering.BrokerAgent
-import pl.edu.pw.elka.stud.tkogut.sade.core.Agent
+
 import pl.edu.pw.elka.stud.tkogut.sade.messages.Message
-import pl.edu.pw.elka.stud.tkogut.brokering.messages.SearchResultMessage
-import pl.edu.pw.elka.stud.tkogut.brokering.messages.QueryMessage
 import pl.edu.pw.elka.stud.tkogut.sade.core.yellowpages.YellowPagesAgent
-import java.io.FileWriter
+import collection.immutable.List
 
 case class AskForSearch(q: String) extends Message
 
@@ -27,39 +25,15 @@ object PassimApp {
     Thread.sleep(300)
     val BA = new BrokerAgent("Broker")
 
-    class Talker(name: String) extends Agent(name) {
-      override def handleMessage(msg: Message) {
-        msg match {
-          case x: SearchResultMessage =>
-            val query = activeDialogs(x.dialogID).attributes("Query").toString
-            val outFileName = "query_" + name + "_" + query.replace(" ", "_") + ".txt"
-            speak("Got result for query:" + query)
-            val fw = new FileWriter(outFileName)
-
-            fw.write(x.toString)
-            fw.close()
-          case AskForSearch(y) =>
-            var dialaogID: String = null
-            dialaogID = establishDialog(BA,
-              (id: String) => {
-                BA ! QueryMessage(y, id)
-              })
-            activeDialogs(dialaogID).attributes += ("Query" -> y)
-        }
-      }
-      override def processDialog(id: String) {
-        activeDialogs(id).nextAction(id)
-      }
-    }
 
     BA.start
-    val client1 = new Talker("Client1")
-    val client2 = new Talker("Client2")
+    val client1 = new DummyClient("Client1", BA)
+    val client2 = new DummyClient("Client2", BA)
 
     client1.start
     client2.start
 
-    val queries1 = List(
+    val queries1: List[String] = List(
       "Brokering",
       "Automotive",
       "OpenCL",
@@ -67,7 +41,7 @@ object PassimApp {
       "Spatial databases",
       "GIS systems")
 
-    val queries2 = List(
+    val queries2: List[String] = List(
       "Object oriented programming",
       "Multiagent systems",
       "Java",

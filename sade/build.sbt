@@ -3,7 +3,7 @@ import AssemblyKeys._ // put this at the top of the file
 seq(assemblySettings: _*)
 
 // set the name
-//name := "Brokering"
+name := "SADE"
 
 version := "1.0"
 
