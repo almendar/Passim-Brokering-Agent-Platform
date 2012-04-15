@@ -34,7 +34,7 @@ abstract class Agent(agentName: String) extends Actor {
    * @param text
    */
   final def speak(Obj: Any) {
-    println(name + ":" + Obj.toString)
+   println(name + ":" + Obj.toString)
   }
 
   /**

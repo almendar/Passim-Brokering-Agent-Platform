@@ -3,7 +3,7 @@ import pl.edu.pw.elka.stud.tkogut.brokering.tools.SingleSearchResult
 import pl.edu.pw.elka.stud.tkogut.sade.messages.DialogMessage
 import pl.edu.pw.elka.stud.tkogut.sade.core.Agent;
 
-class SearchResultMessage(from: Agent, dialogID: String) extends DialogMessage(from, dialogID) {
+class SearchResultMessage(sender: Agent, dialogID: String) extends DialogMessage(sender, dialogID) {
   var resultsList: List[SingleSearchResult] = null
 
   override def toString() = {

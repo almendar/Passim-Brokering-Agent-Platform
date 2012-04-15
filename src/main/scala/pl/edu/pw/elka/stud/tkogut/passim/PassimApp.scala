@@ -26,11 +26,16 @@ object PassimApp {
 
     Thread.sleep(300)
     val BA = new BrokerAgent("Broker")
-    val talker = new Agent("Controller") {
+
+    class Talker(name: String) extends Agent(name) {
       override def handleMessage(msg: Message) {
         msg match {
           case x: SearchResultMessage =>
-            val fw = new FileWriter("result.txt")
+            val query = activeDialogs(x.dialogID).attributes("Query").toString
+            val outFileName = "query_" + name + "_" + query.replace(" ", "_") + ".txt"
+            speak("Got result for query:" + query)
+            val fw = new FileWriter(outFileName)
+
             fw.write(x.toString)
             fw.close()
           case AskForSearch(y) =>
@@ -39,6 +44,7 @@ object PassimApp {
               (id: String) => {
                 BA ! QueryMessage(y, id)
               })
+            activeDialogs(dialaogID).attributes += ("Query" -> y)
         }
       }
       override def processDialog(id: String) {
@@ -47,15 +53,38 @@ object PassimApp {
     }
 
     BA.start
-    talker.start
+    val client1 = new Talker("Client1")
+    val client2 = new Talker("Client2")
 
-        while (true) {
-          val q = readLine()
-          talker ! AskForSearch(q)
-    
-        }
+    client1.start
+    client2.start
 
-    talker ! AskForSearch("Java")
+    val queries1 = List(
+      "Brokering",
+      "Automotive",
+      "OpenCL",
+      "Datamining",
+      "Spatial databases",
+      "GIS systems")
+
+    val queries2 = List(
+      "Object oriented programming",
+      "Multiagent systems",
+      "Java",
+      "OpenCL",
+      "Zupa pomidorowa")
+
+    queries1.foreach(client1 ! AskForSearch(_))
+    queries2.foreach(client2 ! AskForSearch(_))
+
+    /* while (true) {
+      val q = readLine()
+      talker ! AskForSearch(q)
+
+    }
+    */
+
+    //talker ! AskForSearch("Java")
 
   }
 

@@ -34,14 +34,14 @@ class MongoDblpGate {
     //Don't try to look for c++ :) it will fail gracefully
 
     val sb = new StringBuilder
-    //sb append "^"
-    sb append ".*"
+    sb append "^"
+    //    sb append ".*"
     sb append text
-    sb append ".*"
+    //    sb append ".*"
 
     val qObj = MongoDBObject(key -> sb.mkString.r)
-//    val qObj = MongoDBObject(key -> ("^"+ text.r))
-    println(qObj)
+    //    val qObj = MongoDBObject(key -> ("^"+ text.r))
+//    println(qObj)
     documentsCollection.find(qObj)
   }
 

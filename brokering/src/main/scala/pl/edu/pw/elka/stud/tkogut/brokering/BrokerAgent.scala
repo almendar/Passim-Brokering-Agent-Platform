@@ -25,7 +25,6 @@ class BrokerAgent(nameOfAgent: String) extends Agent(nameOfAgent) {
   getSearchSources()
 
   override def handleMessage(msg: Message) {
-    speak(msg)
     msg match {
       case res: SearchResultMessage => processSearchResult(res)
       case y: AgentList => saveSearchResources(y)
