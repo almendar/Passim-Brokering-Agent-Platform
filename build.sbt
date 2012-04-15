@@ -2,6 +2,8 @@ import AssemblyKeys._ // put this at the top of the file
 
 seq(assemblySettings: _*)
 
+scalaVersion := "2.9.2"
+
 // set the name
 //name := "Brokering"
 
