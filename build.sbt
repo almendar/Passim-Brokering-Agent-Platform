@@ -12,7 +12,9 @@ version := "1.0"
 libraryDependencies ++= Seq(
 			"org.scalatest" %% "scalatest" % "1.6.1" % "test",
 			"com.mongodb.casbah" %% "casbah" % "2.1.5-1",
-			"org.apache.httpcomponents" % "httpclient" % "4.1.1"
+			"org.apache.httpcomponents" % "httpclient" % "4.1.1",
+			"com.hp.hpl.jena" % "jena" % "2.6.4",
+			"org.slf4j" % "slf4j-simple" % "1.6.1"
 			)
 
 scalacOptions += "-deprecation"
