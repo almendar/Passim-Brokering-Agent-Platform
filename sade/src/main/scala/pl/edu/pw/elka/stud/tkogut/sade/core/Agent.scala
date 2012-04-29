@@ -57,7 +57,7 @@ abstract class Agent(agentName: String) extends Actor {
         case (Agent.BYE, id: String) =>
           if (activeDialogs.contains(id)) activeDialogs -= id
         case x: Message => handleMessage(x)
-        case y: Any => speak("Unknown message:" + y)
+        case y: Any => speak("Unknown message received:" + y)
       }
     }
   }

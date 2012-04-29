@@ -1,7 +1,6 @@
 package pl.edu.pw.elka.stud.tkogut.sade.core.yellowpages
 
 import scala.collection.mutable.ListBuffer
-import scala.actors.Actor
 import pl.edu.pw.elka.stud.tkogut.sade.core.Agent
 import pl.edu.pw.elka.stud.tkogut.sade.messages._
 
@@ -14,7 +13,7 @@ final object YellowPagesAgent extends Agent("YelloPages") {
     for (ag <- book) {
       lb.append(ag.name)
     }
-    lb.toList
+    book.map(_.name)
   }
 
   override def handleMessage(msg: Message) = {}
@@ -40,8 +39,7 @@ final object YellowPagesAgent extends Agent("YelloPages") {
 
   private def sendSearchingAgentList(msg: SendAgentsMeetingConstraint) = {
     val filteredList = book.filter(msg.apply(_))
-    val listToSend = new AgentList(filteredList.toList)
-    listToSend
+    AgentList(filteredList.toList)
   }
 
 }
