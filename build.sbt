@@ -16,5 +16,8 @@ libraryDependencies ++= Seq(
 			"com.hp.hpl.jena" % "jena" % "2.6.4",
 			"org.slf4j" % "slf4j-simple" % "1.6.1"
 			)
+			
+libraryDependencies <+= scalaVersion { "org.scala-lang" % "scala-swing" % _ }
+
 
 scalacOptions += "-deprecation"

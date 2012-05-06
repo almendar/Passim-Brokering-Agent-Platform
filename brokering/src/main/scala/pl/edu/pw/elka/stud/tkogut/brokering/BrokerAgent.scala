@@ -14,11 +14,13 @@ class BrokerAgent(nameOfAgent: String) extends Agent(nameOfAgent) {
 
   private var mSearchAgentsList: List[Agent] = null;
 
+  /* maps dialogId established with search agent to search task id */
   private val mSearchAgentDialogIdToSearchTaskId = Map[String, String]()
+
+  /* maps search task id to dialog id with query agent */
   private val mSearchTaskIdToQueryAgentDialogId = Map[String, String]()
 
   /**
-   * Maps dilogID with SearchAgents to associated task
    */
   private val mTasksMap = Map[String, SearchTask]()
 
@@ -76,13 +78,9 @@ class BrokerAgent(nameOfAgent: String) extends Agent(nameOfAgent) {
 
     import pl.edu.pw.elka.stud.tkogut.sade.core.Agent
     if (queryMsg.query.trim.isEmpty) {
-      val dialogId = queryMsg.dialogId
-      val who = activeDialogs(dialogId).contact
-      activeDialogs -= queryMsg.dialogId
-      val byeMsg = (Agent.BYE, dialogId)
-      who ! byeMsg
-    }
 
+      sayGoodbye(queryMsg.dialogId)
+    }
     val searchAgentsNumber = mSearchAgentsList.length
     val askerDialogID = queryMsg.dialogId
     val taskID = generateID()
@@ -98,6 +96,13 @@ class BrokerAgent(nameOfAgent: String) extends Agent(nameOfAgent) {
     }
   }
 
+
+  def sayGoodbye(dialogId: String) {
+    val who = activeDialogs(dialogId).contact
+    activeDialogs -= dialogId
+    val byeMsg = (Agent.BYE, dialogId)
+    who ! byeMsg
+  }
 }
 
 class Task(taskId: String) {

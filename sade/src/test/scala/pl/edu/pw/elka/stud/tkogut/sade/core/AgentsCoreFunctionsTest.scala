@@ -17,8 +17,8 @@ class AgentsCoreFunctionsTest extends FunSuite {
   test("Dialog establish and end") {
 
     val respondingAgent = new Agent("Responder") {
-      override def processDialog(id: String) = {}
-      override def handleMessage(msg: Message) = {
+      override def processDialog(id: String)  {}
+      override def handleMessage(msg: Message)  {
         msg match {
           case CheckDialogId(id: String) =>
             assert(activeDialogs(id).id == initDialog)
@@ -61,4 +61,7 @@ class AgentsCoreFunctionsTest extends FunSuite {
     //assert(initDialog == responderDialog)
 
   }
+
+
+
 }

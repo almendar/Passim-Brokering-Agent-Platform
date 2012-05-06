@@ -17,7 +17,7 @@ object Agent {
  */
 abstract class Agent(agentName: String) extends Actor {
 
-  protected val activeDialogs = new HashMap[String, Dialog]
+  protected[core] val activeDialogs = new HashMap[String, Dialog]
 
   protected def handleMessage(msg: Message)
 
@@ -31,7 +31,7 @@ abstract class Agent(agentName: String) extends Actor {
   /**
    * Method make agent to speak text with his name.
    *
-   * @param text
+   * @param Obj
    */
   final def speak(Obj: Any) {
    println(name + ":" + Obj.toString)
@@ -48,7 +48,7 @@ abstract class Agent(agentName: String) extends Actor {
       receive {
         case dialogEstablishRequest: EstablishDialogMessage =>
           speak("Request to establish dialog from:" + dialogEstablishRequest.from.name)
-          activeDialogs += (dialogEstablishRequest.dialogID -> new Dialog(dialogEstablishRequest.from, dialogEstablishRequest.dialogID));
+          activeDialogs += (dialogEstablishRequest.dialogID -> new Dialog(this,dialogEstablishRequest.from, dialogEstablishRequest.dialogID));
           confirmDialog(dialogEstablishRequest.from, dialogEstablishRequest.dialogID)
         case (Agent.OK, id: String) =>
           activeDialogs(id).isConfirmed = true
@@ -56,6 +56,12 @@ abstract class Agent(agentName: String) extends Actor {
           processDialog(id)
         case (Agent.BYE, id: String) =>
           if (activeDialogs.contains(id)) activeDialogs -= id
+        case DialogTimeoutMessage(id) =>
+          endDialog(id)
+        case KeeAliveMessage(id) =>
+          //TODO this can be not true
+          speak("Got keep-alive message for dialog id:" + id)
+          activeDialogs(id).updateTime()
         case x: Message => handleMessage(x)
         case y: Any => speak("Unknown message received:" + y)
       }
@@ -69,16 +75,18 @@ abstract class Agent(agentName: String) extends Actor {
     val dialogId = generateID()
     speak("Sending request for dialog with id:" + dialogId + " to:" + adress.name)
     adress ! new EstablishDialogMessage(this, dialogId)
-    val t = new Dialog(adress, dialogId)
+    val t = new Dialog(this,adress, dialogId)
     t.nextAction = nextAction
     activeDialogs += (dialogId -> t)
     return dialogId
   }
 
   final protected def endDialog(id: String) {
+    speak("Ending dialog:"+id)
     val d = activeDialogs(id)
     activeDialogs -= (id)
     d.contact ! (Agent.BYE, id)
+    d.end()
   }
 
   final private def confirmDialog(adress: Agent, dialogId: String) = {
@@ -89,4 +97,9 @@ abstract class Agent(agentName: String) extends Actor {
   final protected def generateID(): String = {
     UUID.randomUUID().toString()
   }
+
+  final def killAgent()  {
+       this.exit()
+  }
+
 }
