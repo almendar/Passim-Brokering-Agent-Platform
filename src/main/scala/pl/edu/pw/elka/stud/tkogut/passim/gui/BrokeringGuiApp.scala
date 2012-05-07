@@ -2,6 +2,7 @@ package pl.edu.pw.elka.stud.tkogut.passim.gui
 import scala.swing._
 import event.ButtonClicked
 
+
 /**
  * Created with IntelliJ IDEA.
  * User: Tomek

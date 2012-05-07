@@ -7,8 +7,11 @@ name := "SADE"
 
 version := "1.0"
 
+resolvers += "repo.codahale.com" at "http://repo.codahale.com"
+
 libraryDependencies ++= Seq(
-			"org.scalatest" %% "scalatest" % "1.6.1" % "test"
+			"org.scalatest" %% "scalatest" % "1.6.1" % "test",
+			"com.codahale" %% "logula" % "2.1.3"
 			)
 
 scalacOptions += "-deprecation"

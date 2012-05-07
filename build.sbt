@@ -9,12 +9,16 @@ seq(assemblySettings: _*)
 
 version := "1.0"
 
+retrieveManaged := true
+
+resolvers += "repo.codahale.com" at "http://repo.codahale.com"
+
 libraryDependencies ++= Seq(
 			"org.scalatest" %% "scalatest" % "1.6.1" % "test",
 			"com.mongodb.casbah" %% "casbah" % "2.1.5-1",
 			"org.apache.httpcomponents" % "httpclient" % "4.1.1",
 			"com.hp.hpl.jena" % "jena" % "2.6.4",
-			"org.slf4j" % "slf4j-simple" % "1.6.1"
+			"com.codahale" %% "logula" % "2.1.3"
 			)
 			
 libraryDependencies <+= scalaVersion { "org.scala-lang" % "scala-swing" % _ }

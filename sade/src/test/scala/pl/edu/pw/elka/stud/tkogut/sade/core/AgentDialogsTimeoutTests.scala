@@ -3,6 +3,8 @@ package pl.edu.pw.elka.stud.tkogut.sade.core
 import org.scalatest.FunSuite
 import pl.edu.pw.elka.stud.tkogut.sade.messages.Message
 import actors.Actor
+import pl.edu.pw.elka.stud.tkogut.sade.core.Agent._
+import java.util.concurrent.{TimeUnit, CountDownLatch}
 
 /**
  * Created with IntelliJ IDEA.
@@ -13,43 +15,74 @@ import actors.Actor
  */
 
 class AgentDialogsTimeoutTests extends FunSuite {
-  test("DialogInitiatorTimeOut") {
-    //Those test are wrong !!! TODO
-    // Use count-down latch
-    val o = new Object
 
-    val res = new Agent("Responder") {
+  test("DialogInitiatorTimeOut") {
+
+    val latch = new CountDownLatch(1)
+
+
+    val res : Agent = new Agent("Responder") {
       protected def handleMessage(msg: Message) {}
       protected def processDialog(id: String) {}
+
+      override def endDialog(id : String) {
+        super.endDialog(id)
+        if(!activeDialogs.isEmpty) {
+          latch.countDown()
+          assert(activeDialogs.isEmpty)
+        }
+        else {
+          latch.countDown()
+          killAgent()
+        }
+      }
       start()
     }
-
-
     val init = new Agent("Initiator") {
-
-      establishDialog(res,null)
       protected def handleMessage(msg: Message) {
-
       }
-
       protected def processDialog(id: String) {
-        speak("Umieram")
-        exit()
+        killAgent()
+      }
+      start()
+      this.establishDialog(res,null)
+    }
+    //Main thread wait
+    latch.await()
+    }
+
+
+  test("Dialog keep-alive") {
+
+    val latch = new CountDownLatch(2)
+
+
+    val res : Agent = new Agent("Responder1") {
+      protected def handleMessage(msg: Message) {}
+      protected def processDialog(id: String) {}
+
+      override def KeepAliveRequest(id:String) {
+        latch.countDown()
+        super.KeepAliveRequest(id)
       }
       start()
     }
 
-    Actor.actor {
-      Thread.sleep(15000);
-      println("Budzę")
-      o.synchronized(o.notifyAll())
+    val init = new Agent("Initiator1") {
+      protected def handleMessage(msg: Message) {
+      }
+      protected def processDialog(id: String) {
+      }
+      start()
+      this.establishDialog(res,null)
     }
 
-    o.synchronized {
-      o.wait
-    }
-     assert(res.activeDialogs.isEmpty)
-     println("Wychodzę")
+
+    //Two keep alive messages must get throught if the test be passed
+    val b = latch.await(5*Dialog.DIALOG_TIMEOUT,TimeUnit.MILLISECONDS)
+    res.killAgent()
+    init.killAgent()
+    assert(b)
 
   }
 }

@@ -14,7 +14,7 @@ object HelloBuild extends Build {
    lazy val root = Project(id = "Passim-Brokering-Agent-Platform",
                             base = file(".")) dependsOn(sade,brokering)
 						   
-	lazy val externals = Project(id = "Externals",
+	  lazy val externals = Project(id = "Externals",
                            base = file("externals")) dependsOn(root)
 
 	
