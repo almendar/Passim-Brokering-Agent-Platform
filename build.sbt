@@ -14,8 +14,8 @@ retrieveManaged := true
 resolvers += "repo.codahale.com" at "http://repo.codahale.com"
 
 libraryDependencies ++= Seq(
-			"org.scalatest" %% "scalatest" % "1.6.1" % "test",
 			"com.mongodb.casbah" %% "casbah" % "2.1.5-1",
+			"org.scalatest" %% "scalatest" % "1.7.2" % "test",
 			"org.apache.httpcomponents" % "httpclient" % "4.1.1",
 			"com.hp.hpl.jena" % "jena" % "2.6.4",
 			"com.codahale" %% "logula" % "2.1.3"
