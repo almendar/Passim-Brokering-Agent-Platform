@@ -1,11 +1,9 @@
-package pl.edu.pw.elka.stud.tkogut.passim.search
-import org.scalatest.FunSuite
-import org.scalatest.BeforeAndAfter
+package pl.edu.pw.elka.stud.tkogut.passim.search.google
+
+import google.{GoogleSearchSingleResult, GoogleSearch}
 import java.io.File
 import scala.io.Source
-import java.io.IOException
-import pl.edu.pw.elka.stud.tkogut.sade.core.yellowpages.YellowPagesAgent
-import pl.edu.pw.elka.stud.tkogut.passim.search.google._
+import org.scalatest.{FunSuite, BeforeAndAfter}
 
 class GoogleSearchJsonTest extends FunSuite with BeforeAndAfter {
   val testFileName = "jsonGoogleSearchResultTest.txt"

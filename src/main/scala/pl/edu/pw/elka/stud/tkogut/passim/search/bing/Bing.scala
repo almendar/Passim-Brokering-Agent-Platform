@@ -7,9 +7,23 @@ import java.util.Date
 import java.util.Calendar
 import java.net.URL
 import pl.edu.pw.elka.stud.tkogut.brokering.tools.SingleWebSearchResult
+import xml.{Node, NodeSeq}
 
 object BingSearchSingleResult {
   val DATE_TIME_ATTRIBUTE = "DateTime"
+
+  def main(args: Array[String]) {
+    val bingGate = new BingSearch("8A4C8362BAF8F435BCF3F8854CBEF493006E398A")
+    val results = bingGate.search("gazeta");
+    var counter = 0
+    for (r <- results) {
+
+      println(counter + ": " + r.mURL)
+      counter+=1;
+
+    }
+  }
+
 }
 
 class BingSearchSingleResult(url: URL, title: String, description: String, dateTime: Date)
@@ -60,12 +74,18 @@ class BingSearch(app_id: String) {
     }
 
     val webResults = respondXML \\ "WebResult"
-    for (webSingleResult <- webResults) {
-      val title = (webSingleResult \\ "Title") text
-      val description = (webSingleResult \\ "Description") text
-      val url = (webSingleResult \\ "Url") text;
+    for (webSingleResult: Node <- webResults) {
+      val title = (webSingleResult \ "Title") text
+      val description = (webSingleResult \ "Description") text
 
-      val timeText = ((webSingleResult \\ "DateTime") text)
+
+
+      val url = (webSingleResult \ "Url")  text
+
+
+      val timeText = ((webSingleResult \ "DateTime") text)
+
+
 
       val date = getDateTime(timeText)
       val bsr = new BingSearchSingleResult(new URL(url), title, description, date)

@@ -2,8 +2,6 @@ package pl.edu.pw.elka.stud.tkogut.sade.core
 
 import org.scalatest.FunSuite
 import pl.edu.pw.elka.stud.tkogut.sade.messages.Message
-import actors.Actor
-import pl.edu.pw.elka.stud.tkogut.sade.core.Agent._
 import java.util.concurrent.{TimeUnit, CountDownLatch}
 
 /**
