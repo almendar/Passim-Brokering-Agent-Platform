@@ -1,6 +1,6 @@
 package pl.edu.pw.elka.stud.tkogut.passim.search.google
 
-import google.{GoogleSearchSingleResult, GoogleSearch}
+
 import java.io.File
 import scala.io.Source
 import org.scalatest.{FunSuite, BeforeAndAfter}
