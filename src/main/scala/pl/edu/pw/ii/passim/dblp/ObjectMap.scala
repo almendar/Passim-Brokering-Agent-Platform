@@ -16,7 +16,7 @@ case class ObjectMap(map: Map[String, Any] = Map.empty) {
     val r = map.get(k)
     val nv = r match {
       case None => v
-      case Some(x) if x.isInstanceOf[List[Any]] => x.asInstanceOf[List[Any]] - v
+      case Some(x) if x.isInstanceOf[List[Any]] => x.asInstanceOf[List[Any]].filterNot(_ == v)
       case Some(x) if x ==v => Nil
       case x => x
     }

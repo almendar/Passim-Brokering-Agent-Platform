@@ -1,17 +1,22 @@
 package pl.edu.pw.elka.stud.tkogut.brokering.dialect
-import scala.collection.mutable.HashSet
+import scala.collection.mutable.ArrayBuffer
 
-case class Dialect(dialectName: String) extends HashSet[Entity] {
+case class Dialect(dialectName: String)  extends ArrayBuffer[Entity] {
+  
+  
+  
   override def toString = {
     val sb = new StringBuilder
-    sb ++= dialectName + " {"
-    sb += '\n'
+    sb ++= dialectName + "\n{\n"
     for (i <- this) {
-      sb ++= "\t" + i
+      sb ++= "\t" + i + "\n"
     }
     sb ++= "\n}"
     sb.mkString
   }
+ 
+
+  
 }
 
 

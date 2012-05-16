@@ -1,6 +1,8 @@
 package pl.edu.pw.elka.stud.tkogut.brokering.dialect
 
+
 import java.util.Date
+import collection.mutable.ListBuffer
 
 object AttributeType extends Enumeration {
   type AttributeType = Value
@@ -10,6 +12,14 @@ object AttributeType extends Enumeration {
 import AttributeType._
 
 case class Attribute(name: String, attrType: AttributeType) {
+
+  private val parentEntities = new ListBuffer[Entity]
+
+
+  def registerEntity(entity:Entity) {
+    parentEntities.append(entity)
+  }
+
   //  def  = match(value) {
   //    case String => STRING
   //    case Integer => INTEGER

@@ -5,11 +5,9 @@ import AttributeType._
 class BoundAttribute[X](name: String, attrType: AttributeType)
   extends Attribute(name, attrType) {
 
-  private var _constraints: Function[X,Boolean] = null
+  var constraints: Function1[X, Boolean] = null
 
-  def constraints[X] = _constraints
-
-  def constraints_(values: Set[X]) = _constraints = values
+  //def constraints[X] = constraints
 
   def validateValue(value: X): Option[Boolean] = {
     constraints match {

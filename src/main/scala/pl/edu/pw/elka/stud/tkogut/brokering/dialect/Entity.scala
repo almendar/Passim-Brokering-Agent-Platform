@@ -5,8 +5,11 @@ import collection.mutable.Buffer
 case class Entity(name: String) {
   var attributes = Buffer[Attribute]()
 
-  def addAttribute(attribute:Attribute): Entity = {
-    attributes+=attribute
+  def addAttributes(attr: Attribute*): Entity = {
+    for (a <- attr) {
+      attributes += a
+      a.registerEntity(this)
+    }
     return this
   }
   override def toString = {
