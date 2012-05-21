@@ -6,12 +6,13 @@ import collection.mutable.ListBuffer
 
 object AttributeType extends Enumeration {
   type AttributeType = Value
-  val TIME, DATE, DATETIEM, INTEGER, FLOAT, STRING = Value
+  val NAME, ADDRESS, PHONE_NUMBER, EMAIL, GRAD, TIME, DATE, DATETIME,
+  INTEGER, FLOAT, STRING = Value
 }
 
 import AttributeType._
 
-case class Attribute(name: String, attrType: AttributeType) {
+case class Attribute(name: String, attrType: AttributeType, isMultipleValue:Boolean = false) {
 
   private val parentEntities = new ListBuffer[Entity]
 
