@@ -2,6 +2,8 @@ package pl.edu.pw.elka.stud.tkogut.passim
 
 import pl.edu.pw.elka.stud.tkogut.brokering.dialect.{AttributeType, Attribute, Entity, Dialect}
 
+;
+
 /**
  * Created with IntelliJ IDEA.
  * User: Tomek
@@ -9,8 +11,15 @@ import pl.edu.pw.elka.stud.tkogut.brokering.dialect.{AttributeType, Attribute, E
  * Time: 20:52
  */
 
+private object defs {
+  type QueryData = Tuple2[Attribute,String]
+  type KnowledgeSource = Set[Attribute]
+}
+
+
 object PassimDialect extends Dialect("PassimDialect")
 {
+  import defs._
 
   final val UNIVERSITY = Entity("University")
   final val universityName = Attribute("Name", AttributeType.STRING);
@@ -60,17 +69,39 @@ object PassimDialect extends Dialect("PassimDialect")
   val NO_MATTER = "*"
 
 
-  def planExecution(entites: List[Entity], kb: List[List[Attribute]], question: List[(Attribute,String)])
+  def planExecution(entites: Set[Entity], kb: Set[KnowledgeSource], question:Set[QueryData])
   {
-        val attributesWeLookFor = for(s <- question if s._2==SEARCH_FOR) yield s
+        val a :  KnowledgeSource=null
+        val attributesWeLookFor: Set[Attribute] = for(s <- question if s._2==SEARCH_FOR) yield s._1
+        println("We look for:" + attributesWeLookFor.mkString(","))
         val allAtributesSpecified = question.map(_._1)
-        val ourSrcOfInformation = kb.distinct.filter(attributesWeLookFor.contains(_));
-        for
+        println("Attributes that user gave info on:" + allAtributesSpecified.mkString(","))
+        val ourSrcOfInformation = kb.filter
+        {
+          (ks : Set[Attribute]) =>
+          {
+            !((attributesWeLookFor & ks).isEmpty)
+          }
+        }
+        println("Kb may be able to find info for us:" + ourSrcOfInformation)
+
+        val missingAttributes = ourSrcOfInformation.map{
+           allAtributesSpecified &~ _
+        }
+        println("Sources need additional atributes"+missingAttributes)
+
+
+
+
+
+
+
+        /*for
         {
           src <- ourSrcOfInformation
           oth <-kb
           if (oth.con)
-        }
+        } */
 
   }
 
@@ -78,20 +109,15 @@ object PassimDialect extends Dialect("PassimDialect")
 
   def main(args: Array[String])
   {
-    val entites = List(UNIVERSITY,PERSON,PUBLICATION)
-    val kb = List();
-        (
-      List(),
-      List(),
-      List(),
-
+    val entites = Set(UNIVERSITY,PERSON,PUBLICATION)
+    val kb : Set[KnowledgeSource] = Set[KnowledgeSource](
+      Set[Attribute](personName,universityName,universityFoundationYear),
+      Set[Attribute](universityName,universityHomeCity)
     )
 
-    val question : List[(Attribute,String)] = List[(Attribute,String)]
-    (
+    val question  = Set[QueryData](
       (personName,SEARCH_FOR) ,
-      (universityHomeCity,"Warsaw")
-    )
+      (universityHomeCity,"Warsaw"))
     planExecution(entites,kb,question)
     val msg = "Passim dialect\n%s".format(PassimDialect)
     println(msg)
