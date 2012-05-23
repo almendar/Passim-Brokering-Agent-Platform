@@ -1,6 +1,8 @@
 package pl.edu.pw.elka.stud.tkogut.passim
 
 import pl.edu.pw.elka.stud.tkogut.brokering.dialect.{AttributeType, Attribute, Entity, Dialect}
+import collection.mutable.ArrayBuffer
+import scala.Tuple2
 
 ;
 
@@ -11,18 +13,25 @@ import pl.edu.pw.elka.stud.tkogut.brokering.dialect.{AttributeType, Attribute, E
  * Time: 20:52
  */
 
-private object defs {
-  type QueryData = Tuple2[Attribute,String]
-  type KnowledgeSource = Set[Attribute]
+
+class KnowledgeSource(name:String) extends ArrayBuffer[Attribute] {
+  override def toString() : String =
+  {
+    return name;
+  }
 }
+
+
+class QueryData extends ArrayBuffer[Tuple2[Attribute,String]]
+
 
 
 object PassimDialect extends Dialect("PassimDialect")
 {
-  import defs._
+
 
   final val UNIVERSITY = Entity("University")
-  final val universityName = Attribute("Name", AttributeType.STRING);
+  final val universityName = Attribute("UniversityName", AttributeType.STRING);
   final val universityFoundationYear = new Attribute("FoundationYear", AttributeType.DATE);
   final val universityHomeCity = new Attribute("HomeCity",AttributeType.ADDRESS);
   final val universityDepartments = new Attribute("Departamens", AttributeType.STRING, isMultipleValue = true);
@@ -34,7 +43,7 @@ object PassimDialect extends Dialect("PassimDialect")
 
 
   final val PUBLICATION = Entity("Publication")
-  final val publicationAuthor = Attribute("Name",AttributeType.NAME);
+  final val publicationAuthor = Attribute("PersonName",AttributeType.NAME);
   final val publicationTitle  = Attribute("Title",AttributeType.STRING);
   final val publicationISBN =   Attribute("ISBN",AttributeType.STRING);
   final val publicationArea = Attribute("PublicationArea", AttributeType.STRING,isMultipleValue=true)
@@ -69,33 +78,76 @@ object PassimDialect extends Dialect("PassimDialect")
   val NO_MATTER = "*"
 
 
-  def planExecution(entites: Set[Entity], kb: Set[KnowledgeSource], question:Set[QueryData])
+  def planExecution(entites: Set[Entity], kb: Array[KnowledgeSource], question:QueryData)
   {
-        val a :  KnowledgeSource=null
-        val attributesWeLookFor: Set[Attribute] = for(s <- question if s._2==SEARCH_FOR) yield s._1
+
+        val attributesWeLookFor = for(s <- question if s._2==SEARCH_FOR) yield s._1
+
         println("We look for:" + attributesWeLookFor.mkString(","))
         val allAtributesSpecified = question.map(_._1)
         println("Attributes that user gave info on:" + allAtributesSpecified.mkString(","))
-        val ourSrcOfInformation = kb.filter
+        val ourSrcOfInformation: List[KnowledgeSource] =
+          for(ks <- kb.toList;
+              attr <- attributesWeLookFor;
+              if(ks contains attr)
+            ) yield ks
+
+        println("Kb may be able to find info for us:" + ourSrcOfInformation)
+
+        val missingAttributesInKbs: List[ArrayBuffer[Attribute]] = ourSrcOfInformation.map
+        {
+          ks:KnowledgeSource =>
+            for(a <- allAtributesSpecified;
+              if(!ks.contains(a))
+            ) yield a
+        }
+
+        println("Attributes that are missing in search KBs:"+missingAttributesInKbs)
+
+    val otherKbsThatCanBeUsed: List[Array[KnowledgeSource]] =
+      (ourSrcOfInformation zip missingAttributesInKbs).map {
+        para:(KnowledgeSource, ArrayBuffer[Attribute]) =>
+          val r = for(
+            kbs:KnowledgeSource <- kb;
+            if (para._1!=kbs) && (para._2.filter(kbs.contains(_)).nonEmpty)
+          ) yield kbs
+          println(r)
+          r
+      }
+      println("Other KBs that can help:"+otherKbsThatCanBeUsed(0).toString)
+
+//          map {
+//           (  =>
+//              for (
+//                kbs <- kb;
+//                p <- para;
+//                a <- p._2
+//                if(p._1 != kbs)
+//
+//              ) yield kbs
+//        }
+
+
+    /*
+          kb.filter
         {
           (ks : Set[Attribute]) =>
           {
             !((attributesWeLookFor & ks).isEmpty)
           }
-        }
-        println("Kb may be able to find info for us:" + ourSrcOfInformation)
+        }.toList
+
 
         val missingAttributes = ourSrcOfInformation.map{
            allAtributesSpecified &~ _
         }
         println("Sources need additional atributes"+missingAttributes)
 
+        ourSrcOfInformation.map { l:List[defs.KnowledgeSource] =>
+                 l
+        }
 
-
-
-
-
-
+      */
         /*for
         {
           src <- ourSrcOfInformation
@@ -110,17 +162,27 @@ object PassimDialect extends Dialect("PassimDialect")
   def main(args: Array[String])
   {
     val entites = Set(UNIVERSITY,PERSON,PUBLICATION)
-    val kb : Set[KnowledgeSource] = Set[KnowledgeSource](
-      Set[Attribute](personName,universityName,universityFoundationYear),
-      Set[Attribute](universityName,universityHomeCity)
-    )
 
-    val question  = Set[QueryData](
-      (personName,SEARCH_FOR) ,
-      (universityHomeCity,"Warsaw"))
+    val kb = Array(new KnowledgeSource("KS1"), new KnowledgeSource("KS2"),new KnowledgeSource("KS3"))
+    kb(0)++=List(personName,universityName,universityFoundationYear)
+    kb(1)++=List(universityName,universityHomeCity)
+    kb(2)++=List(universityHomeCity,universityName, universityFoundationYear)
+    val question  = new QueryData
+    question++=List((personName,SEARCH_FOR), (universityHomeCity,"Warsaw"))
     planExecution(entites,kb,question)
+
+
+
+   /*
+    (
+      )
+
+
+
+
     val msg = "Passim dialect\n%s".format(PassimDialect)
     println(msg)
+    */
   }
 
 }
