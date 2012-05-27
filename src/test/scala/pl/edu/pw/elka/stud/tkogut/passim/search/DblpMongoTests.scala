@@ -2,7 +2,6 @@ package pl.edu.pw.elka.stud.tkogut.passim.search
 import org.scalatest.FunSuite
 import org.scalatest.BeforeAndAfterAll
 import pl.edu.pw.elka.stud.tkogut.passim.search.dblp.MongoDblpGate
-import com.mongodb.casbah.commons.MongoDBObject
 import java.util.ArrayList
 import com.mongodb.BasicDBList
 

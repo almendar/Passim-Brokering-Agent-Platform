@@ -1,8 +1,6 @@
 package pl.edu.pw.elka.stud.tkogut.sade.core
 
-import scala.actors._
 import scala.collection.mutable.Map
-import pl.edu.pw.elka.stud.tkogut.sade.messages.{DialogTimeoutMessage, KeepAliveMessage}
 
 
 /**

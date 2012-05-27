@@ -1,8 +1,6 @@
 package pl.edu.pw.elka.stud.tkogut.passim.search.dblp
 
-import pl.edu.pw.elka.stud.tkogut.sade.core._
 import pl.edu.pw.elka.stud.tkogut.brokering.SearchAgent
-import pl.edu.pw.elka.stud.tkogut.sade.messages._
 import pl.edu.pw.elka.stud.tkogut.brokering.messages._
 import pl.edu.pw.elka.stud.tkogut.brokering.tools._
 

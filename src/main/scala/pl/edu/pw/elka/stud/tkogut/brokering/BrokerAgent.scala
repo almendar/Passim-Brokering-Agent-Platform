@@ -1,11 +1,9 @@
 package pl.edu.pw.elka.stud.tkogut.brokering
 
-import scala.Console
 import scala.collection.mutable.Map
 import pl.edu.pw.elka.stud.tkogut.sade.core._
 import pl.edu.pw.elka.stud.tkogut.sade.core.yellowpages._
 import pl.edu.pw.elka.stud.tkogut.sade.messages._
-import pl.edu.pw.elka.stud.tkogut.brokering._
 import pl.edu.pw.elka.stud.tkogut.brokering.messages._
 import pl.edu.pw.elka.stud.tkogut.brokering.tools._
 import scala.collection.mutable.ListBuffer

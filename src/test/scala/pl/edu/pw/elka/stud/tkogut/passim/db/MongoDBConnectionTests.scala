@@ -2,7 +2,6 @@ package pl.edu.pw.elka.stud.tkogut.passim.db
 import org.scalatest.FunSuite
 import com.mongodb.casbah.Imports._
 import org.scalatest.BeforeAndAfterAll
-import com.mongodb.DBObject
 
 class MongoDBConnectionTests extends FunSuite with BeforeAndAfterAll {
 

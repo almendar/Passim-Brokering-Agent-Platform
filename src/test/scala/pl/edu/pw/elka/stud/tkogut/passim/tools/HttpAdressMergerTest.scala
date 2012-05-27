@@ -1,6 +1,5 @@
 package pl.edu.pw.elka.stud.tkogut.passim.tools
 import org.scalatest.FunSuite
-import org.scalatest.BeforeAndAfter
 import java.net.URL
 import java.util.Calendar
 import java.util.Date

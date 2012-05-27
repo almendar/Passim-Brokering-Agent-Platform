@@ -7,7 +7,7 @@ import java.util.Date
 import java.util.Calendar
 import java.net.URL
 import pl.edu.pw.elka.stud.tkogut.brokering.tools.SingleWebSearchResult
-import xml.{Node, NodeSeq}
+import xml.Node
 
 object BingSearchSingleResult {
   val DATE_TIME_ATTRIBUTE = "DateTime"

@@ -2,7 +2,6 @@ package pl.edu.pw.elka.stud.tkogut.sade.core;
 
 import org.scalatest._
 import pl.edu.pw.elka.stud.tkogut.sade.messages._
-import scala.actors._
 
 case class StartDialog(withWho: Agent) extends Message
 case class CheckDialogId(dialogId: String) extends Message
