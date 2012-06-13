@@ -1,8 +1,8 @@
 package pl.edu.pw.elka.stud.tkogut.sade.core
+
 import scala.actors.Actor
 import scala.collection.mutable.HashMap
 import pl.edu.pw.elka.stud.tkogut.sade.messages._
-import java.util.UUID
 import com.codahale.logula._
 import org.apache.log4j.Level
 
@@ -19,23 +19,34 @@ object Agent {
  */
 abstract class Agent(agentName: String) extends Actor {
 
-  Logging.configure { log =>
-    log.registerWithJMX = true
-
-    log.level = Level.INFO
-    log.loggers("com.myproject.weebits") = Level.OFF
-
-    log.console.enabled = true
-    log.console.threshold = Level.INFO
+  Logging.configure {
+    log =>
+      log.registerWithJMX = true
+      log.level = Level.INFO
+      //log.loggers("com.myproject.weebits") = Level.OFF
+      log.console.enabled = true
+      log.console.threshold = Level.INFO
   }
 
 
-  private val logger  = Log.forName(Agent.getClass.toString)
+  val logger = Log.forName(Agent.getClass.toString)
 
-  protected[core] val activeDialogs = new HashMap[String, Dialog]
+  //@TODO Think about this.
+  //
+  var dialogMgr: DialogManager = new DialogManager(this)
 
+
+  /**
+   * This method is called when message is received.
+   * Should be overwritten to handle different types of messages.
+   * @param msg
+   */
   protected def handleMessage(msg: Message)
 
+  /**
+   * This method is called when dialog is confirmed.
+   * @param id
+   */
   protected def processDialog(id: String)
 
   /**
@@ -49,7 +60,7 @@ abstract class Agent(agentName: String) extends Actor {
    * @param Obj
    */
   final def speak(Obj: Any) {
-//   println(name + ":" + Obj.toString)
+    //   println(name + ":" + Obj.toString)
     this.logger.info(Obj.toString)
   }
 
@@ -61,23 +72,21 @@ abstract class Agent(agentName: String) extends Actor {
   def act = {
     speak("Started to act.")
     loop {
-      receive {
+      receiveWithin(500) {
         case dialogEstablishRequest: EstablishDialogMessage =>
           speak("Request to establish dialog from:" + dialogEstablishRequest.from.name)
-          val d = new Dialog(dialogEstablishRequest.from, dialogEstablishRequest.dialogID)
-          activeDialogs += (dialogEstablishRequest.dialogID -> d);
-          confirmDialog(dialogEstablishRequest.from, dialogEstablishRequest.dialogID)
-          monitorDialogTimeOut(d)
+          dialogMgr.establishResponseDialog(dialogEstablishRequest.from, dialogEstablishRequest.dialogID)
+          dialogMgr.confirmDialog(dialogEstablishRequest.dialogID)
+          speak("Confirming dialog:" + dialogEstablishRequest.dialogID + " with:" + dialogEstablishRequest.from)
+        //monitorDialogTimeOut(d)
         case (Agent.OK, id: String) =>
-          activeDialogs(id).isConfirmed = true
+          dialogMgr.setDialogConfirmed(id)
           speak("Dialog confirmed:" + id)
-          KeepAliveRequest(id)
+          //KeepAliveRequest(id)
           processDialog(id)
         case (Agent.BYE, id: String) =>
-          if (activeDialogs.contains(id)) activeDialogs -= id
-        case DialogTimeoutMessage(id) =>
-          val dialog = activeDialogs.getOrElse(id, null);
-          monitorDialogTimeOut(dialog)
+          speak("Dialog ended by:"+ dialogMgr.getContact(id))
+          dialogMgr.removeDialog(id)
         case KeepAliveMessage(id) =>
           KeepAliveRequest(id)
         case Agent.DIE =>
@@ -86,91 +95,84 @@ abstract class Agent(agentName: String) extends Actor {
         case x: Message => handleMessage(x)
         case y: Any => speak("Unknown message received:" + y)
       }
+      endOutOfTimeDialogs()
+      refreshMyDialogs()
     }
   }
 
 
+  def refreshMyDialogs() {
+    val toBeUpdated: Iterable[String] = dialogMgr.getDialogsThatShouldBeUpdated()
+    toBeUpdated.foreach {
+      k: String =>
+        dialogMgr.updateTime(k)
+        dialogMgr.getContact(k) ! KeepAliveMessage(dialogId = k)
+    }
+  }
+
+  def endOutOfTimeDialogs() {
+    val timedOutDialogs: Iterable[String] = dialogMgr.getOutdatedDialogs()
+    timedOutDialogs.foreach {
+      id: String =>
+        dialogMgr.endDialogWithAgent(id)
+    }
+  }
+
+  /**
+   * Invoked when dialog should be refreshed not to get outdated.
+   * @param id
+   */
   protected def KeepAliveRequest(id: String) {
     speak("Got keep-alive message for dialog id:" + id)
-    val dialog = activeDialogs.getOrElse(id, null);
-    if (dialog != null) {
-      if (dialog.isInitiated)
-        sendKeepAlive(dialog)
-      else {
-        speak("Updating dialog: %s time".format(id))
-        dialog.updateTime()
-      }
+
+    if (dialogMgr.hasDialog(id)) {
+      dialogMgr.updateTime(id)
+      speak("Updating dialog: %s time".format(id))
     }
     else {
-      speak("Dialog already closed:%s"
-        .format(id))
+      speak("Dialog already closed:%s".format(id))
+      dialogMgr.endDialogWithAgent(id)
     }
   }
 
   final protected def establishDialog(adress: Agent, nextAction: String => Unit = new Function1[String, Unit] {
-      def apply(id: String): Unit = {}
-    }): String =
-  {
-    val dialogId = generateID()
+    def apply(id: String): Unit = {}
+  }): String = {
+    val dialogId = dialogMgr.establishDialog(adress)
+    dialogMgr.setDialogNextAction(dialogId, nextAction)
     speak("Sending request for dialog with id:" + dialogId + " to:" + adress.name)
     adress ! new EstablishDialogMessage(this, dialogId)
-    val t = new Dialog(adress, dialogId,isInitiated = true)
-    t.nextAction = nextAction
-    activeDialogs += (dialogId -> t)
     return dialogId
   }
 
-
+  /*
   protected def endDialog(id: String) {
     speak("Ending dialog:"+id)
-    val d = activeDialogs(id)
-    activeDialogs -= (id)
-    d.contact ! (Agent.BYE, id)
+    val contact = dialogMgr.getContact(id)
+    dialogMgr.removeDialog(id)
+    contact ! (Agent.BYE, id)
   }
+  */
 
-  final private def confirmDialog(adress: Agent, dialogId: String) {
-    speak("Confirming dialog:" + dialogId + " with:" + adress.name)
-    adress ! (Agent.OK, dialogId)
-  }
-
-  final protected def generateID(): String = {
-    UUID.randomUUID().toString()
-  }
 
   /**
    * This method can be safely called from anywhere cause it is asynchronous.
    * It will send a message to this agent telling to kill himself.
    */
-  final def killAgent()  {
-      this ! Agent.DIE
+  final def killAgent() {
+    this ! Agent.DIE
   }
 
-  private def sendKeepAlive(dialog:Dialog)  {
+  private def sendKeepAlive(dialog: Dialog) {
     dialog.contact ! KeepAliveMessage(dialogId = dialog.id)
     val me = this
     Actor.actor {
-        Thread.sleep(Dialog.KEEP_ALIVE_TIME)
-        me ! KeepAliveMessage(dialog.id)
-      }
-  }
-
-  private def monitorDialogTimeOut(dialog:Dialog) {
-    speak("Monitoring timeout of dialog: %s".format(dialog.id))
-    val currentTime = System.currentTimeMillis()
-    val dt = (currentTime - dialog._updateTime)
-    speak("Dialog dt=%d".format(dt))
-    val isTimedOut = (dt > Dialog.DIALOG_TIMEOUT)
-    if(isTimedOut) {
-      speak("Dialog %s is timedout".format(dialog.id))
-      endDialog(dialog.id)
+      Thread.sleep(Dialog.KEEP_ALIVE_TIME)
+      me ! KeepAliveMessage(dialog.id)
     }
-    else {
-      val me = this
-      Actor.actor {
-        Thread.sleep(Dialog.DIALOG_TIMEOUT)
-        me ! DialogTimeoutMessage(dialog.id)
-      }
   }
 
+  override def toString() : String = {
+    return name
   }
 }

@@ -7,8 +7,10 @@ import pl.edu.pw.elka.stud.tkogut.brokering.messages._
 
 abstract class SearchAgent(name: String) extends Agent(name) with YelloPagesSearchable {
 
-  override def handleMessage(msg: Message) = {
-    msg match {
+  override def handleMessage(msg: Message) =
+  {
+    msg match
+    {
       case query: QueryMessage => search(query)
       //case _ => ;
     }

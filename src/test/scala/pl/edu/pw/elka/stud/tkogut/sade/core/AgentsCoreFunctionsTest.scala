@@ -2,6 +2,7 @@ package pl.edu.pw.elka.stud.tkogut.sade.core;
 
 import org.scalatest._
 import pl.edu.pw.elka.stud.tkogut.sade.messages._
+import java.util.concurrent.{TimeUnit, CountDownLatch}
 
 case class StartDialog(withWho: Agent) extends Message
 case class CheckDialogId(dialogId: String) extends Message
@@ -15,15 +16,19 @@ class AgentsCoreFunctionsTest extends FunSuite {
 
   test("Dialog establish and end") {
 
+    val latch = new CountDownLatch(2)
+
     val respondingAgent = new Agent("Responder") {
       override def processDialog(id: String)  {}
       override def handleMessage(msg: Message)  {
         msg match {
           case CheckDialogId(id: String) =>
-            assert(activeDialogs(id).id == initDialog)
+            assert(dialogMgr.getContact(id) ==
+              dialogMgr.getContact(initDialog))
             sender ! IdIsOK()
           case CheckIfDialogIsRemoved(id: String) =>
-            assert(!activeDialogs.contains(id))
+            assert(!dialogMgr.hasDialog(id))
+           latch.countDown()
         }
       }
     }
@@ -35,18 +40,17 @@ class AgentsCoreFunctionsTest extends FunSuite {
             initDialog = establishDialog(a,
               (id: String) => {
                 assert(initDialog != null)
-                assert(activeDialogs(id).isConfirmed)
+                assert(dialogMgr.isConfirmed(id))
                 respondingAgent ! CheckDialogId(id)
               })
           case IdIsOK() =>
-            endDialog(initDialog)
+            dialogMgr.endDialogWithAgent(initDialog)
             respondingAgent ! CheckIfDialogIsRemoved(initDialog)
-
+            latch.countDown()
         }
       }
       override def processDialog(id: String) {
-        val dialog = activeDialogs(id)
-        dialog.nextAction(id)
+        dialogMgr.invokeAction(id)
       }
     }
 
@@ -56,7 +60,7 @@ class AgentsCoreFunctionsTest extends FunSuite {
 
     //Start the conversation
     initiatorAgent ! StartDialog(respondingAgent)
-
+    latch.await(5,TimeUnit.SECONDS)
     //assert(initDialog == responderDialog)
 
   }

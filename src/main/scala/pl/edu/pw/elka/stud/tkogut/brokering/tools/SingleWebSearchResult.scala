@@ -13,7 +13,7 @@ class SingleWebSearchResult(url: URL, title: String, description: String) extend
 
   override protected def openTag = "Web result"
 
-  override def toString() = {
+  override def toString() : String = {
     val sb: StringBuilder = new StringBuilder
     sb append super.toString
     sb append "\n\tURL: "

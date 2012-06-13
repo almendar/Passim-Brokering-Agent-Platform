@@ -22,7 +22,7 @@ final case class Dialog(contact: Agent, id: String, isInitiated: Boolean = false
 }
 
 object Dialog {
-  val DIALOG_TIMEOUT = 10000
-  val KEEP_ALIVE_TIME = 500
+  val DIALOG_TIMEOUT = 90*1000
+  val KEEP_ALIVE_TIME = 3*1000
 
 }

@@ -1,12 +1,13 @@
 package pl.edu.pw.elka.stud.tkogut.brokering
 
 import scala.collection.mutable.Map
+import scala.collection.mutable.ListBuffer
 import pl.edu.pw.elka.stud.tkogut.sade.core._
 import pl.edu.pw.elka.stud.tkogut.sade.core.yellowpages._
 import pl.edu.pw.elka.stud.tkogut.sade.messages._
 import pl.edu.pw.elka.stud.tkogut.brokering.messages._
 import pl.edu.pw.elka.stud.tkogut.brokering.tools._
-import scala.collection.mutable.ListBuffer
+
 
 class BrokerAgent(nameOfAgent: String) extends Agent(nameOfAgent) {
 
@@ -33,8 +34,7 @@ class BrokerAgent(nameOfAgent: String) extends Agent(nameOfAgent) {
   }
 
   override def processDialog(id: String) = {
-    val dialog: Dialog = activeDialogs(id)
-    val searchAgent = dialog.contact
+    val searchAgent = dialogMgr.getContact(id)
     val taskId = mSearchAgentDialogIdToSearchTaskId(id)
     val searchTask = mTasksMap(taskId)
     val queryText: String = searchTask.query
@@ -62,7 +62,7 @@ class BrokerAgent(nameOfAgent: String) extends Agent(nameOfAgent) {
       val askerDialogIdm = mSearchTaskIdToQueryAgentDialogId(st.taskID)
       val answerToQuery = new SearchResultMessage(this, askerDialogIdm)
       answerToQuery.resultsList = merger.getResultList
-      activeDialogs(askerDialogIdm).contact ! answerToQuery
+      dialogMgr.getContact(askerDialogIdm) ! answerToQuery
     }
   }
 
@@ -81,7 +81,7 @@ class BrokerAgent(nameOfAgent: String) extends Agent(nameOfAgent) {
     }
     val searchAgentsNumber = mSearchAgentsList.length
     val askerDialogID = queryMsg.dialogId
-    val taskID = generateID()
+    val taskID = DialogManager.generateID()
     mSearchTaskIdToQueryAgentDialogId += (taskID -> askerDialogID)
     val task = new SearchTask(taskID)
     task.nrOfAnswersLeft = searchAgentsNumber
@@ -96,22 +96,15 @@ class BrokerAgent(nameOfAgent: String) extends Agent(nameOfAgent) {
 
 
   def sayGoodbye(dialogId: String) {
-    val who = activeDialogs(dialogId).contact
-    activeDialogs -= dialogId
+    val who = dialogMgr.getContact(dialogId)
+    dialogMgr.removeDialog(dialogId)
     val byeMsg = (Agent.BYE, dialogId)
     who ! byeMsg
   }
 }
 
-class Task(taskId: String) {
-  val taskID = taskId
-}
 
-class SearchTask(taskId: String) extends Task(taskId) {
-  var nrOfAnswersLeft = 0;
-  val answers: ListBuffer[List[SingleSearchResult]] = new ListBuffer[List[SingleSearchResult]]()
-  var nextFree: Int = 0;
-  var query: String = null
-}
+
+
 
 

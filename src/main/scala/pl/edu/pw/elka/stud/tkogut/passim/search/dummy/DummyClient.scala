@@ -10,7 +10,7 @@ class DummyClient(name: String, BA:BrokerAgent) extends Agent(name) {
   override def handleMessage(msg: Message) {
     msg match {
       case x: SearchResultMessage =>
-        val query = activeDialogs(x.dialogID).attributes("Query").toString
+        val query = dialogMgr.getAttribute(x.dialogID,"Query").toString
         val outFileName = "query_" + name + "_" + query.replace(" ", "_") + ".txt"
         speak("Got result for query:" + query)
         val fw = new FileWriter(outFileName)
@@ -23,10 +23,10 @@ class DummyClient(name: String, BA:BrokerAgent) extends Agent(name) {
           (id: String) => {
             BA ! QueryMessage(y, id)
           })
-        activeDialogs(dialaogID).attributes += ("Query" -> y)
+        dialogMgr.putAttribute(dialaogID, ("Query" -> y))
     }
   }
   override def processDialog(id: String) {
-    activeDialogs(id).nextAction(id)
+    dialogMgr.invokeAction(id)
   }
 }

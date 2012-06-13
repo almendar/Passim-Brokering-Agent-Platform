@@ -33,6 +33,6 @@ class MongoDblpSearchAgent(name: String) extends SearchAgent(name) {
 
         result
     }.toList
-    activeDialogs(queryMsg.dialogId).contact ! sr
+    dialogMgr.getContact(queryMsg.dialogId) ! sr
   }
 }

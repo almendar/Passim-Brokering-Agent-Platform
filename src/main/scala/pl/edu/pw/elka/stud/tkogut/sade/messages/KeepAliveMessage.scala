@@ -9,9 +9,8 @@ package pl.edu.pw.elka.stud.tkogut.sade.messages
  */
 
 /**
- * Message purpose is to signal Agent that he should checkout this dialog. Two options, if dialog was created
- * by this agent he should send to other Agent message of the same type to keep it away from timeout.
- * If this dialog was initiated by the other agent it should update dialog touch time.
+ * Message purpose is to signal Agent that he should update time of this dialog not to
+ * get deleted on next timeout check.
  * @param dialogId dialog id
  */
 case class KeepAliveMessage(dialogId:String) extends Message

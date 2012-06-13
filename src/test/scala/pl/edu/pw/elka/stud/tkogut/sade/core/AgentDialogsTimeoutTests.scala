@@ -23,7 +23,7 @@ class AgentDialogsTimeoutTests extends FunSuite {
       protected def handleMessage(msg: Message) {}
       protected def processDialog(id: String) {}
 
-      override def endDialog(id : String) {
+      /*override def endDialog(id : String) {
         super.endDialog(id)
         if(!activeDialogs.isEmpty) {
           latch.countDown()
@@ -33,7 +33,7 @@ class AgentDialogsTimeoutTests extends FunSuite {
           latch.countDown()
           killAgent()
         }
-      }
+      }*/
       start()
     }
     val init = new Agent("Initiator") {
@@ -53,8 +53,6 @@ class AgentDialogsTimeoutTests extends FunSuite {
   test("Dialog keep-alive") {
 
     val latch = new CountDownLatch(2)
-
-
     val res : Agent = new Agent("Responder1") {
       protected def handleMessage(msg: Message) {}
       protected def processDialog(id: String) {}

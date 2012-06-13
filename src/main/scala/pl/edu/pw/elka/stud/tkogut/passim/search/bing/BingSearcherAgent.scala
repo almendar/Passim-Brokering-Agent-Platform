@@ -10,6 +10,6 @@ class BingSearcherAgent(nameofAgent: String) extends SearchAgent(nameofAgent) {
   def search(query: QueryMessage) = {
     val sr: SearchResultMessage = new SearchResultMessage(this, query.dialogId)
     sr.resultsList = bingGate.search(query.query)
-    activeDialogs(query.dialogId).contact ! sr
+    dialogMgr.getContact(query.dialogId) ! sr
   }
 }

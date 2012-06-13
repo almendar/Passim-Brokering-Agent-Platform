@@ -1,7 +1,6 @@
 package pl.edu.pw.elka.stud.tkogut.brokering.dialect
 
 
-import java.util.Date
 import collection.mutable.ListBuffer
 
 object AttributeType extends Enumeration {

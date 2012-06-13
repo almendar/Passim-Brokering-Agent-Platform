@@ -22,6 +22,6 @@ class GoogleSearcherAgent(nameOfAgent: String) extends SearchAgent(nameOfAgent) 
     } finally {
       sr.resultsList = result
     }
-    activeDialogs(queryMsg.dialogId).contact ! sr
+    dialogMgr.getContact(queryMsg.dialogId) ! sr
   }
 }

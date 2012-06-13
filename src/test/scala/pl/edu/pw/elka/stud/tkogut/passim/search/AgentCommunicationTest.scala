@@ -13,7 +13,7 @@ import pl.edu.pw.elka.stud.tkogut.brokering.tools._
 import java.net.URL
 import java.util.Calendar
 
-class AgentRegistrationTest extends FunSuite with BeforeAndAfterEach {
+class AgentCommunicationTest extends FunSuite with BeforeAndAfterEach {
 
   val BROKER_NAME = "BrokerAgent"
   val GOOGLE_NAME = "GoogleSearch"
@@ -50,7 +50,7 @@ class AgentRegistrationTest extends FunSuite with BeforeAndAfterEach {
           new GoogleSearchSingleResult(queryRes1URL, queryRes1Title, queryRes1Desc),
           new GoogleSearchSingleResult(queryRes2URL, queryRes2Title, queryRes2Desc))
         sr.resultsList = result
-        activeDialogs(queryMsg.dialogId).contact ! sr
+        dialogMgr.getContact(queryMsg.dialogId) ! sr
       }
     }
 
@@ -61,7 +61,8 @@ class AgentRegistrationTest extends FunSuite with BeforeAndAfterEach {
         val result = List[BingSearchSingleResult](new BingSearchSingleResult(queryRes1URL, queryRes1Title, queryRes1Desc, queryRes1Date.getTime()),
           new BingSearchSingleResult(queryRes3URL, queryRes3Title, queryRes3Desc, queryRes3Date.getTime()))
         sr.resultsList = result
-        activeDialogs(queryMsg.dialogId).contact ! sr
+        dialogMgr.getContact(queryMsg.dialogId) ! sr
+
       }
 
     }
@@ -99,7 +100,7 @@ class AgentRegistrationTest extends FunSuite with BeforeAndAfterEach {
       }
 
       override def processDialog(id: String) {
-        activeDialogs(id).contact ! (QueryMessage(QUERY_TEXT, id))
+        dialogMgr.getContact(id) ! (QueryMessage(QUERY_TEXT, id))
       }
     }
     talker.start()
