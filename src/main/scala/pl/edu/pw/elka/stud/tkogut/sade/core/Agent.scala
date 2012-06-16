@@ -100,7 +100,9 @@ abstract class Agent(agentName: String) extends Actor {
     }
   }
 
-
+  /**
+   * Refreshes and notifies agents that dialogs should still be valid.
+   */
   def refreshMyDialogs() {
     val toBeUpdated: Iterable[String] = dialogMgr.getDialogsThatShouldBeUpdated()
     toBeUpdated.foreach {
@@ -110,6 +112,9 @@ abstract class Agent(agentName: String) extends Actor {
     }
   }
 
+  /**
+   * Discards all dialogs that are out-of-time.
+   */
   def endOutOfTimeDialogs() {
     val timedOutDialogs: Iterable[String] = dialogMgr.getOutdatedDialogs()
     timedOutDialogs.foreach {
@@ -135,6 +140,13 @@ abstract class Agent(agentName: String) extends Actor {
     }
   }
 
+
+  /**
+   * Method established dialog with another agent.
+   * @param adress Reference to agent we wanto to contact.
+   * @param nextAction Pointer to callback f-ction that can be invoked when dialog is established.
+   * @return Id of established dialog.
+   */
   final protected def establishDialog(adress: Agent, nextAction: String => Unit = new Function1[String, Unit] {
     def apply(id: String): Unit = {}
   }): String = {
@@ -163,15 +175,10 @@ abstract class Agent(agentName: String) extends Actor {
     this ! Agent.DIE
   }
 
-  private def sendKeepAlive(dialog: Dialog) {
-    dialog.contact ! KeepAliveMessage(dialogId = dialog.id)
-    val me = this
-    Actor.actor {
-      Thread.sleep(Dialog.KEEP_ALIVE_TIME)
-      me ! KeepAliveMessage(dialog.id)
-    }
-  }
-
+  /**
+   * Will give name of the Agent
+   * @return Agent's name.
+   */
   override def toString() : String = {
     return name
   }
