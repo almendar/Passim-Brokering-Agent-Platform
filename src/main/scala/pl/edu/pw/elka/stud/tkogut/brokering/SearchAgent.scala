@@ -5,7 +5,7 @@ import pl.edu.pw.elka.stud.tkogut.sade.core.yellowpages._
 import pl.edu.pw.elka.stud.tkogut.sade.messages._
 import pl.edu.pw.elka.stud.tkogut.brokering.messages._
 
-abstract class SearchAgent(name: String) extends Agent(name) with YelloPagesSearchable {
+abstract class SearchAgent(name: String) extends Agent(name) with YellowPagesSearchable {
 
   override def handleMessage(msg: Message) =
   {

@@ -28,7 +28,7 @@ class BrokerAgent(nameOfAgent: String) extends Agent(nameOfAgent) {
   override def handleMessage(msg: Message) {
     msg match {
       case res: SearchResultMessage => processSearchResult(res)
-      case y: AgentList => saveSearchResources(y)
+      case y: AgentListQueryMessage => saveSearchResources(y)
       case query: QueryMessage => addSearchTask(query) //establishDialog(searchAgentsList.head) //a.head ! Query(query.q, this) //() => { searchAgentsList.head ! Query(query.q, this) }
     }
   }
@@ -66,7 +66,7 @@ class BrokerAgent(nameOfAgent: String) extends Agent(nameOfAgent) {
     }
   }
 
-  private def saveSearchResources(lst: AgentList): Unit = {
+  private def saveSearchResources(lst: AgentListQueryMessage): Unit = {
     speak("Received list with search agents")
     if (lst.list.length != 0) mSearchAgentsList = lst.list
     else getSearchSources()

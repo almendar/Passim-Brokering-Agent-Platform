@@ -25,7 +25,7 @@ class YellowPagesTesting extends FunSuite with BeforeAndAfterEach with BeforeAnd
 
   test("Registration test") {
     val AGENT_NAME: String = "John"
-    val agent = new Agent(AGENT_NAME) with YelloPagesSearchable {
+    val agent = new Agent(AGENT_NAME) with YellowPagesSearchable {
       override def handleMessage(msg: Message) = {}
 
       override def processDialog(id: String) = {}
@@ -40,12 +40,11 @@ class YellowPagesTesting extends FunSuite with BeforeAndAfterEach with BeforeAnd
       Thread.sleep(50)
     }
     assert(registered)
-
     YellowPagesAgent.getNamesOfRegisteredAgents().contains(AGENT_NAME)
   }
 
   test("FilteringTest") {
-    new Agent("John") with YelloPagesSearchable {
+    new Agent("John") with YellowPagesSearchable {
       override def handleMessage(msg: Message) = {}
 
       override def processDialog(id: String) = {}
@@ -58,7 +57,7 @@ class YellowPagesTesting extends FunSuite with BeforeAndAfterEach with BeforeAnd
       override def act() = {
         YellowPagesAgent ! new SendAgentsMeetingConstraint(this, (a: Agent) => a.name == "John")
         receive {
-          case l: AgentList => {
+          case l: AgentListQueryMessage => {
             //speak("Got list of Agents")
             assert(l.list.head.name == "John")
           }
