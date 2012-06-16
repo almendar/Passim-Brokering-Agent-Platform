@@ -39,7 +39,7 @@ final object YellowPagesAgent extends Agent("YelloPages") {
 
   private def sendSearchingAgentList(msg: SendAgentsMeetingConstraint) = {
     val filteredList = book.filter(msg.apply(_))
-    AgentList(filteredList.toList)
+    AgentListQueryMessage(filteredList.toList)
   }
 
 }

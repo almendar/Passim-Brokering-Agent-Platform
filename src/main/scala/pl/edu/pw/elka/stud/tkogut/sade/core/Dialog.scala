@@ -17,7 +17,7 @@ final case class Dialog(contact: Agent, id: String, isInitiated: Boolean = false
   var nextAction: String => Unit = new Function1[String, Unit] {
     def apply(dialogId: String): Unit = {}
   }
-  var attributes = Map[String, Object]()
+  var attributes = Map[String, AnyRef]()
   def updateTime() = _updateTime = System.currentTimeMillis()
 }
 
