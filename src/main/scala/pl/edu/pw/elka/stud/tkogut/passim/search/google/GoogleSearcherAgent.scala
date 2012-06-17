@@ -1,6 +1,7 @@
 package pl.edu.pw.elka.stud.tkogut.passim.search.google
 
 import pl.edu.pw.elka.stud.tkogut.brokering._
+import dialect.FreeTextSearch
 import pl.edu.pw.elka.stud.tkogut.brokering.messages._
 import java.io.IOException
 
@@ -9,6 +10,7 @@ class GoogleSearcherAgent(nameOfAgent: String) extends SearchAgent(nameOfAgent) 
   private val API_KEY = "AIzaSyCZ72XdhT4SOG2BUdGFA043jNxT9Fd4wPk"
   val googleGate = new GoogleSearch(API_KEY)
 
+  final val capabilities = List(FreeTextSearch)
 
   def search(queryMsg: QueryMessage) = {
     val sr: SearchResultMessage = new SearchResultMessage(this, queryMsg.dialogId)

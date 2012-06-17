@@ -7,6 +7,7 @@ import java.io.FileWriter
 import pl.edu.pw.elka.stud.tkogut.brokering.BrokerAgent
 
 class DummyClient(name: String, BA:BrokerAgent) extends Agent(name) {
+  //val me = this;
   override def handleMessage(msg: Message) {
     msg match {
       case x: SearchResultMessage =>
@@ -21,7 +22,7 @@ class DummyClient(name: String, BA:BrokerAgent) extends Agent(name) {
         var dialaogID: String = null
         dialaogID = establishDialog(BA,
           (id: String) => {
-            BA ! QueryMessage(y, id)
+            BA ! QueryMessage(DummyClient.this,y,id)
           })
         dialogMgr.putAttribute(dialaogID, ("Query" -> y))
     }

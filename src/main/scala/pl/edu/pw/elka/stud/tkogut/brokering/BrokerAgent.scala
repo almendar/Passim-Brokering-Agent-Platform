@@ -1,17 +1,15 @@
 package pl.edu.pw.elka.stud.tkogut.brokering
 
 import scala.collection.mutable.Map
-import scala.collection.mutable.ListBuffer
 import pl.edu.pw.elka.stud.tkogut.sade.core._
 import pl.edu.pw.elka.stud.tkogut.sade.core.yellowpages._
 import pl.edu.pw.elka.stud.tkogut.sade.messages._
 import pl.edu.pw.elka.stud.tkogut.brokering.messages._
 import pl.edu.pw.elka.stud.tkogut.brokering.tools._
 
-
 class BrokerAgent(nameOfAgent: String) extends Agent(nameOfAgent) {
 
-  private var mSearchAgentsList: List[Agent] = null;
+  private val knowledgeSources = new KnowledgeSourceManager()
 
   /* maps dialogId established with search agent to search task id */
   private val mSearchAgentDialogIdToSearchTaskId = Map[String, String]()
@@ -38,7 +36,7 @@ class BrokerAgent(nameOfAgent: String) extends Agent(nameOfAgent) {
     val taskId = mSearchAgentDialogIdToSearchTaskId(id)
     val searchTask = mTasksMap(taskId)
     val queryText: String = searchTask.query
-    searchAgent ! new QueryMessage(queryText, id)
+    searchAgent ! new QueryMessage(this, queryText, id)
   }
 
   private def getSearchSources() = {
@@ -68,7 +66,7 @@ class BrokerAgent(nameOfAgent: String) extends Agent(nameOfAgent) {
 
   private def saveSearchResources(lst: AgentListQueryMessage): Unit = {
     speak("Received list with search agents")
-    if (lst.list.length != 0) mSearchAgentsList = lst.list
+    if (lst.getNumberOfAgents() != 0) knowledgeSources.registerAgent(lst.getAgents())
     else getSearchSources()
   }
 
@@ -79,7 +77,7 @@ class BrokerAgent(nameOfAgent: String) extends Agent(nameOfAgent) {
 
       sayGoodbye(queryMsg.dialogId)
     }
-    val searchAgentsNumber = mSearchAgentsList.length
+    val searchAgentsNumber = knowledgeSources.getFreeSearchAgents.length
     val askerDialogID = queryMsg.dialogId
     val taskID = DialogManager.generateID()
     mSearchTaskIdToQueryAgentDialogId += (taskID -> askerDialogID)
@@ -87,13 +85,12 @@ class BrokerAgent(nameOfAgent: String) extends Agent(nameOfAgent) {
     task.nrOfAnswersLeft = searchAgentsNumber
     task.query = queryMsg.query
     mTasksMap(taskID) = task
-    mSearchAgentsList.foreach { x: Agent =>
+    knowledgeSources.getFreeSearchAgents.foreach { x: Agent =>
       val searchAgentDialogID = establishDialog(x)
       //mSearchTaskIdToQueryAgentDialogId += (taskID -> searchAgentDialogID)
       mSearchAgentDialogIdToSearchTaskId += (searchAgentDialogID -> taskID)
     }
   }
-
 
   def sayGoodbye(dialogId: String) {
     val who = dialogMgr.getContact(dialogId)

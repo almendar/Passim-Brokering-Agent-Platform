@@ -1,6 +1,6 @@
 package pl.edu.pw.elka.stud.tkogut.passim
 
-import pl.edu.pw.elka.stud.tkogut.brokering.dialect.{AttributeType, Attribute, Entity, Dialect}
+import pl.edu.pw.elka.stud.tkogut.brokering.dialect.{AttributeType, Entity, Dialect, Attribute}
 import collection.mutable.ArrayBuffer
 import scala.Tuple2
 
@@ -69,14 +69,11 @@ object PassimDialect extends Dialect("PassimDialect") {
   //val allEntities = university :: publication :: person :: Nil
 
 
-  val SEARCH_FOR = "?"
-  val NO_MATTER = "*"
-
 
   def planExecution(entities: Set[Entity], knowledgeBase: List[KnowledgeSource], question: QueryData) {
 
     val attributesWeLookFor: List[Attribute] =
-      question.withFilter(_._2==SEARCH_FOR).map(_._1).toList
+      question.withFilter(_._2==Attribute.SEARCH_FOR).map(_._1).toList
 
       //for (s <- question if s._2 == SEARCH_FOR) yield s._1
     println("We look for:" + attributesWeLookFor.mkString(","))
@@ -166,7 +163,7 @@ object PassimDialect extends Dialect("PassimDialect") {
     kb(1) ++= List(universityName, universityHomeCity)
     kb(2) ++= List(universityHomeCity, universityName, universityFoundationYear)
     val question = new QueryData
-    question ++= List((personName, SEARCH_FOR), (universityHomeCity, "Warsaw"))
+    question ++= List((personName, Attribute.SEARCH_FOR), (universityHomeCity, "Warsaw"))
     planExecution(entites, kb, question)
   }
 

@@ -59,7 +59,7 @@ class YellowPagesTesting extends FunSuite with BeforeAndAfterEach with BeforeAnd
         receive {
           case l: AgentListQueryMessage => {
             //speak("Got list of Agents")
-            assert(l.list.head.name == "John")
+            assert(l.getAgents.toList.head.name == "John")
           }
 
         }

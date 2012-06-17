@@ -8,6 +8,12 @@ import pl.edu.pw.elka.stud.tkogut.brokering.tools._
 
 class MongoDblpSearchAgent(name: String) extends SearchAgent(name) {
 
+  /**
+   * @TODO Capabilities to check and reuse
+   *
+   */
+  override final val capabilities = List()
+
   val dblpGate = new MongoDblpGate()
   dblpGate.connect()
 

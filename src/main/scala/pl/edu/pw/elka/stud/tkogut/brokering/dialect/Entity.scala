@@ -13,7 +13,7 @@ case class Entity(name: String) {
     return this
   }
 
-  def addAttributes(attr: Attribute*) : Entity = {
+  def addAttributes(attr: Attribute*): Entity = {
     addAttributes(attr.toList)
   }
 
@@ -21,3 +21,4 @@ case class Entity(name: String) {
     name + "(" + attributes.mkString(", ") + ")"
   }
 }
+

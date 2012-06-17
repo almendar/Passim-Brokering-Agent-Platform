@@ -1,6 +1,8 @@
 package pl.edu.pw.elka.stud.tkogut.brokering.dialect
 import scala.collection.mutable.ArrayBuffer
 
+
+
 case class Dialect(dialectName: String)  extends ArrayBuffer[Entity] {
   override def toString = {
     val sb = new StringBuilder

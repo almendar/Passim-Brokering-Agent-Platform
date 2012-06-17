@@ -1,7 +1,8 @@
 package pl.edu.pw.elka.stud.tkogut.sade.core
 
-import scala.actors.Actor
-import scala.collection.mutable.HashMap
+import scala.actors.Actor._
+import scala.actors._
+import collection.mutable.{ArrayBuffer, HashMap}
 import pl.edu.pw.elka.stud.tkogut.sade.messages._
 import com.codahale.logula._
 import org.apache.log4j.Level
@@ -10,6 +11,7 @@ object Agent {
   final val OK = "OK"
   final val BYE = "BYE"
   final val DIE = "DIE"
+  final val DLG_REFRESH_CMD = "DLG_REFRESH_CMD"
 }
 
 /**
@@ -35,6 +37,16 @@ abstract class Agent(agentName: String) extends Actor {
   //
   var dialogMgr: DialogManager = new DialogManager(this)
 
+  //val listOfActivities = ArrayBuffer[Function0] ()
+
+  val me = this
+  val dialogRefreshHelper = actor {
+    loop
+    {
+      Thread.sleep(500)
+      me ! CmdMsg(Agent.DLG_REFRESH_CMD)
+    }
+  }
 
   /**
    * This method is called when message is received.
@@ -71,8 +83,9 @@ abstract class Agent(agentName: String) extends Actor {
    */
   def act = {
     speak("Started to act.")
+    dialogRefreshHelper.start()
     loop {
-      receiveWithin(500) {
+      receive {
         case dialogEstablishRequest: EstablishDialogMessage =>
           speak("Request to establish dialog from:" + dialogEstablishRequest.from.name)
           dialogMgr.establishResponseDialog(dialogEstablishRequest.from, dialogEstablishRequest.dialogID)
@@ -92,11 +105,12 @@ abstract class Agent(agentName: String) extends Actor {
         case Agent.DIE =>
           speak("I am dying...")
           this.exit()
+        case CmdMsg(Agent.DLG_REFRESH_CMD) =>
+          endOutOfTimeDialogs()
+          refreshMyDialogs()
         case x: Message => handleMessage(x)
         case y: Any => speak("Unknown message received:" + y)
       }
-      endOutOfTimeDialogs()
-      refreshMyDialogs()
     }
   }
 

@@ -100,7 +100,7 @@ class AgentCommunicationTest extends FunSuite with BeforeAndAfterEach {
       }
 
       override def processDialog(id: String) {
-        dialogMgr.getContact(id) ! (QueryMessage(QUERY_TEXT, id))
+        dialogMgr.getContact(id) ! (QueryMessage(this,QUERY_TEXT, id))
       }
     }
     talker.start()

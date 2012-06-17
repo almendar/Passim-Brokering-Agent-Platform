@@ -2,8 +2,11 @@ package pl.edu.pw.elka.stud.tkogut.passim.search.bing
 
 import pl.edu.pw.elka.stud.tkogut.brokering.SearchAgent
 import pl.edu.pw.elka.stud.tkogut.brokering.messages._
+import pl.edu.pw.elka.stud.tkogut.brokering.dialect.FreeTextSearch
 
 class BingSearcherAgent(nameofAgent: String) extends SearchAgent(nameofAgent) {
+
+  override final val capabilities = List(FreeTextSearch)
 
   val bingGate = new BingSearch("8A4C8362BAF8F435BCF3F8854CBEF493006E398A")
 
